@@ -12,12 +12,12 @@ canvas{display:block;image-rendering:pixelated;border:2px solid #332200}
 #skillFill{height:100%;width:0%;background:linear-gradient(90deg,#f40,#ff0);transition:width .1s}
 #wpName{font-size:11px;color:#ff8;min-width:56px}
 #ghostEl{font-size:11px;color:#8df;min-width:52px}
-#keyBar{display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 10px;background:#060606;border:1px solid #1a1a1a;border-top:none}
+#keyBar{display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 10px;background:#0e0e0e;border:1px solid #2a2a2a;border-top:none}
 #dpad{display:grid;grid-template-areas:'. ku .' 'kl kd kr';grid-template-columns:repeat(3,24px);gap:2px}
 #actkeys{display:flex;gap:5px;align-items:center}
-.key{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:24px;height:30px;padding:0 5px;font-size:10px;font-weight:bold;color:#333;background:#0d0d0d;border:1px solid #242424;border-bottom:2px solid #2e2e2e;border-radius:3px;font-family:'Courier New',monospace;transition:color .06s,background .06s,border-color .06s,box-shadow .06s;line-height:1.1;text-align:center;user-select:none}
-.key small{font-size:7px;color:#2b2b2b;font-weight:normal;transition:color .06s;letter-spacing:.3px}
+.key{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:24px;height:30px;padding:0 5px;font-size:10px;font-weight:bold;color:#aaa;background:#1e1e1e;border:1px solid #444;border-bottom:2px solid #555;border-radius:3px;font-family:'Courier New',monospace;transition:color .06s,background .06s,border-color .06s,box-shadow .06s;line-height:1.1;text-align:center;user-select:none}
+.key small{font-size:7px;color:#777;font-weight:normal;transition:color .06s;letter-spacing:.3px}
 .key.active{color:#ffdd00;background:#1c1200;border-color:#bb6600;border-bottom-color:#ffcc00;box-shadow:0 0 8px #ff880044}
-.key.active small{color:#bb6600}
+.key.active small{color:#cc8800}
 #ku{grid-area:ku}#kl{grid-area:kl}#kd{grid-area:kd}#kr{grid-area:kr}
 .key.wide{min-width:46px}
