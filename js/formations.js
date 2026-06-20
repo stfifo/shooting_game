@@ -71,4 +71,4 @@ function shootEnemy(m){
   else eBullets.push(mk(0,sp));
 }
 function getEnemies(){return waveSquads.flatMap(sq=>sq.members.filter(m=>m.alive&&m.ready));}
-function squadDone(sq){return sq.phase!=='DELAY'&&sq.phase!=='ENTER'&&sq.members.every(m=>!m.alive);}
+function squadDone(sq){return sq.phase!=='DELAY'&&sq.members.every(m=>!m.alive);}
