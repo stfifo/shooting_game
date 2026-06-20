@@ -31,7 +31,13 @@ function makeSquad(type,fmtKey,pivotX,targetY,delay=0,entryKey='TOP'){
 function updateSquad(sq,dt){
   if(sq.phase==='DELAY'){sq.delayT-=dt;if(sq.delayT<=0)sq.phase='ENTER';return;}
   sq.frameN++;
-  const alive=sq.members.filter(m=>m.alive);if(!alive.length)return;
+  const alive=sq.members.filter(m=>m.alive);
+  if(!alive.length){
+    // 전원 사망 시 다음 단계로 진행 (stuck 방지, 단 ATTACK까지 도달해야 wave clear)
+    if(sq.phase==='ENTER')sq.phase='HOLD';
+    if(sq.phase==='HOLD'){sq.holdT-=dt;if(sq.holdT<=0)sq.phase='ATTACK';}
+    return;
+  }
   if(sq.phase==='ENTER'){
     sq.pathT=Math.min(1,sq.pathT+dt*.65);const bp=sq.bp;
     sq.pivot.x=cbez(sq.pathT,bp[0],bp[2],bp[4],bp[6]);
@@ -71,4 +77,4 @@ function shootEnemy(m){
   else eBullets.push(mk(0,sp));
 }
 function getEnemies(){return waveSquads.flatMap(sq=>sq.members.filter(m=>m.alive&&m.ready));}
-function squadDone(sq){return sq.phase!=='DELAY'&&sq.members.every(m=>!m.alive);}
+function squadDone(sq){return sq.phase==='ATTACK'&&sq.members.every(m=>!m.alive);}

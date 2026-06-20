@@ -75,8 +75,10 @@ assign3/
 `makeSquad(type, fmtKey, pivotX, targetY, delay, entryKey)` 로 생성.  
 각 편대는 `DELAY → ENTER → HOLD → ATTACK` 4단계를 거친다.
 - **ENTER**: `cbez()` 큐빅 베지어로 진입 경로 보간. `ENTRY` 맵에서 경로 제어점 선택.
-- **HOLD**: 피벗이 좌우로 스윕.
+- **HOLD**: 피벗이 좌우로 스윕. `holdT`(3.5~5.5초) 소진 후 ATTACK으로 전환.
 - **ATTACK**: 멤버가 플레이어를 향해 돌격, 화면 아래로 나가면 재진입.
+
+**전원 사망 시 단계 진행**: 멤버가 ENTER 중 전원 사망하면 HOLD로 전환하고 `holdT`를 정상 소진한 뒤 ATTACK으로 넘어간다. HOLD 중 전원 사망하면 `holdT` 남은 시간을 계속 카운트다운한 뒤 ATTACK으로 전환한다. `squadDone(sq)` 는 `phase==='ATTACK'` 이고 전원 사망한 경우에만 `true`를 반환한다 — ENTER/HOLD 단계에서 일찍 전멸해도 wave clear가 즉시 트리거되지 않는다.
 
 `WAVE_NORMAL` 배열(12패턴)이 순환하며 비보스 웨이브를 정의. `waveIdx % 5 === 0` 이면 보스 웨이브.
 
@@ -229,7 +231,7 @@ loop(ts)
 3. **상태 머신 조기 반환** — `update(dt)` 첫 줄에 `if(STATE!=='PLAYING')return`. 오버레이 렌더는 `draw()` 마지막에 STATE별 분기.
 4. **픽셀 아트 렌더러** — `pxDraw(data, pal, ox, oy)`: 2D 숫자 배열 → `fillRect` 타일. `PX=3`이 전체 픽셀 스케일 기준. `cx.imageSmoothingEnabled=false`.
 5. **AABB 충돌** — `ovlp(a,b)`: 중심거리 vs 반합 비교. 보스/적에게는 `w*0.55~0.85` 축소 히트박스 적용.
-6. **편대 FSM** — 각 `squad` 객체가 `DELAY→ENTER→HOLD→ATTACK` 4단계 상태를 독립 진행. `cbez()` 큐빅 베지어로 ENTER 경로 보간.
+6. **편대 FSM** — 각 `squad` 객체가 `DELAY→ENTER→HOLD→ATTACK` 4단계 상태를 독립 진행. `cbez()` 큐빅 베지어로 ENTER 경로 보간. 전원 사망 시 단계가 강제로 진행되며(`ENTER→HOLD→ATTACK`), `squadDone()`은 ATTACK 단계 도달 후 전원 사망일 때만 `true` — 이른 전멸이 wave 즉시 clear로 이어지지 않는다.
 7. **보스 스폰 가드** — `updateWaves()` wave-clear 조건에 `!bossWave && !bossWarnActive` 필수. 없으면 경고 중 편대 전멸 시 다음 웨이브로 조기 진행하는 버그 발생.
 8. **파이어볼 관통** — `pierce:true, hset:Set` 조합으로 단일 탄이 동일 적에게 중복 히트하지 않도록 방지.
 9. **배경 보간** — `bgBlend(0→1)` 전환 완료 후 `bgPhase` 갱신. 스크롤 속도(`bgScrollSpeed()`)를 `spdMul=spd/30`으로 환산해 STARS/BG_OBJS에 동일 배율 적용.
