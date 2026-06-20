@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -Command \"New-Item -ItemType Directory -Force -Path backups | Out-Null; $count = (Get-ChildItem backups -Directory -ErrorAction SilentlyContinue).Count + 1; $num = $count.ToString('D3'); $date = Get-Date -Format 'yyyyMMdd_HHmmss'; $dest = 'backups/' + $num + '_' + $date; New-Item -ItemType Directory -Force -Path $dest | Out-Null; Get-ChildItem -Path . -Exclude backups | Copy-Item -Destination $dest -Recurse; Write-Host '자동 백업 완료'\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -Command \"Write-Host '작업 완료! html을 열어서 확인하세요.'\""
+          }
+        ]
+      }
+    ]
+  }
+}
