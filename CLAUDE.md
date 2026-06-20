@@ -64,7 +64,8 @@ assign3/
 ### 배경 시스템
 - **페이즈 0~3**: 지구(파랑) → 대기권 → 화성 → 심우주. `wave` 값으로 `targetBgPhase()` 가 결정.
 - `bgBlend(0→1)` 로 두 페이즈 사이를 부드럽게 보간. 완전히 전환된 뒤 `bgPhase` 가 갱신된다.
-- `bgScrollSpeed()` 가 웨이브별 스크롤 속도를 반환(20→42→68→100 px/s). `STARS`, `BG_OBJS` 모두 동일 배율 적용.
+- `bgScrollSpeed()` 가 웨이브별 스크롤 속도를 반환(20→42→68→100 px/s). 
+- `STARS`, `BG_OBJS` 모두 동일 배율 적용.
 
 ### 픽셀 아트 렌더링
 `pxDraw(data, pal, ox, oy)` 함수가 2D 숫자 배열을 `fillRect` 격자로 렌더링한다. `PX=3` 이 픽셀 스케일.  
@@ -110,11 +111,12 @@ assign3/
 | `BOMB_MAX` | 3 | 폭탄 최대 보유 수 |
 | `FIRE_RATE` | 0.13 | 기본 연사 간격(초) |
 
-## 자동 백업
+## 수동 백업
 
-`Edit|Write|MultiEdit` 도구 사용 직후 `.claude/settings.json` 의 `PostToolUse` 훅이 **폴더 전체**를 `backups/NNN_YYYYMMDD_HHmmss/` 형태로 자동 저장한다.  
-`backups/` 폴더 자신은 `Get-ChildItem -Exclude backups` 로 제외하여 재귀 복사를 방지한다.  
-훅 내부에서 경로 문자열을 `$dest = 'backups/' + $num + '_' + $date` 방식으로 조합한다. `-Destination "..."` 식 인라인 이중 따옴표는 PowerShell `-Command` 인자를 조기 종료시키므로 사용하지 않는다.
+사용자가 **"백업해"** 라고 요청할 때만 `.claude/backup.ps1` 을 실행한다. 자동 백업(`PostToolUse` 훅)은 비활성화되어 있다.
+
+스크립트는 프로젝트 **폴더 전체**를 `backups/NNN_YYYYMMDD_HHmmss/` 형태로 저장한다.  
+`backups/` 폴더 자신은 `Get-ChildItem -Exclude backups` 로 제외하여 재귀 복사를 방지한다.
 
 ## 커스텀 슬래시 커맨드
 
