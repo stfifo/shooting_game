@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>Strikers 1945+</title>
-<style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Courier New',monospace}
 #wrap{width:480px}
@@ -27,54 +21,3 @@ canvas{display:block;image-rendering:pixelated;border:2px solid #332200}
 .key.active small{color:#bb6600}
 #ku{grid-area:ku}#kl{grid-area:kl}#kd{grid-area:kd}#kr{grid-area:kr}
 .key.wide{min-width:46px}
-</style>
-</head>
-<body>
-<div id="wrap">
-  <div id="topBar">
-    <span>SCORE <span id="scoreEl">00000000</span></span>
-    <span>WAVE <span id="waveEl">-</span></span>
-    <span>HI <span id="hiEl">00000000</span></span>
-  </div>
-  <canvas id="canvas" width="480" height="600"></canvas>
-  <div id="botBar">
-    <div class="hg"><span class="hl">LIFE</span><div id="livesEl"></div></div>
-    <div class="hg"><span class="hl">BOMB[Z]</span><div id="bombsEl"></div></div>
-    <div class="hg"><span class="hl">SKILL[X]</span><div id="skillWrap"><div id="skillFill"></div></div></div>
-    <div class="hg"><span class="hl">WPN</span><div id="wpName">SINGLE</div></div>
-    <div class="hg"><span class="hl">WING</span><div id="ghostEl">-</div></div>
-  </div>
-  <div id="keyBar">
-    <div id="dpad">
-      <span class="key" id="ku">↑</span>
-      <span class="key" id="kl">←</span>
-      <span class="key" id="kd">↓</span>
-      <span class="key" id="kr">→</span>
-    </div>
-    <div id="actkeys">
-      <span class="key" id="k-z">Z<br><small>BOMB</small></span>
-      <span class="key" id="k-x">X<br><small>SKILL</small></span>
-      <span class="key" id="k-p">P<br><small>PAUSE</small></span>
-      <span class="key wide" id="k-start">ENTER<br><small>START</small></span>
-    </div>
-  </div>
-</div>
-<script src="js/constants.js"></script>
-<script src="js/state.js"></script>
-<script src="js/input.js"></script>
-<script src="js/sprites.js"></script>
-<script src="js/background.js"></script>
-<script src="js/player.js"></script>
-<script src="js/abilities.js"></script>
-<script src="js/enemies.js"></script>
-<script src="js/bullets.js"></script>
-<script src="js/formations.js"></script>
-<script src="js/boss.js"></script>
-<script src="js/waves.js"></script>
-<script src="js/items.js"></script>
-<script src="js/particles.js"></script>
-<script src="js/collisions.js"></script>
-<script src="js/hud.js"></script>
-<script src="js/game.js"></script>
-</body>
-</html>

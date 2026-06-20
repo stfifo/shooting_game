@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 프로젝트 개요
 
 Strikers 1945+ 스타일의 종스크롤 슈팅 게임. 빌드 도구 없이 브라우저에서 직접 열면 바로 실행된다.  
-JS는 `js/` 하위 17개 파일로 컴포넌트 분리되어 있으며, `game.html`은 HTML+CSS 셸 역할만 한다.
+CSS는 `style.css`, JS는 `js/` 하위 17개 파일로 분리되어 있으며, `game.html`은 HTML 셸 역할만 한다.
 
 ## 실행 방법
 
@@ -22,7 +22,8 @@ open game.html           # macOS
 
 ```
 assign3/
-├── game.html             # HTML + CSS 셸 (JS는 js/ 에서 로드)
+├── game.html             # HTML 셸만 (CSS·JS 모두 외부 파일)
+├── style.css             # 전체 UI 스타일 (HUD, 키 피드백, 레이아웃)
 ├── js/                   # 게임 JS 컴포넌트 (로드 순서 = 의존 순서)
 │   ├── constants.js      # Canvas setup, Utilities, 게임 상수
 │   ├── state.js          # 전역 가변 상태 변수
@@ -54,7 +55,7 @@ assign3/
 
 ## game.html 아키텍처
 
-`game.html`은 HTML+CSS 셸만 담당한다. JS는 `js/` 디렉토리의 17개 파일로 분리되어 `<script src="">` 순서대로 로드된다. 각 파일은 섹션 주석(`// ── 이름 ──`)으로 시작한다. 위에서 아래로 선언 순서가 의존 순서이기도 하다.
+`game.html`은 HTML 셸만 담당한다. CSS는 `<link href="style.css">`, JS는 `js/` 디렉토리의 17개 파일로 분리되어 `<script src="">` 순서대로 로드된다. 각 파일은 섹션 주석(`// ── 이름 ──`)으로 시작한다. 위에서 아래로 선언 순서가 의존 순서이기도 하다.
 
 ### 게임 상태 머신
 `STATE` 변수가 `'IDLE' → 'PLAYING' → 'PAUSED' / 'GAMEOVER'` 로 전환된다.  
