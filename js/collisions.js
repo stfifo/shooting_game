@@ -31,6 +31,12 @@ function checkCollisions(){
   if(boss&&boss.alive&&!boss.entering){const bh={x:boss.x,y:boss.y,w:boss.w*.55,h:boss.h*.55};if(ovlp(bh,P))hitPlayer();}
 }
 function hitPlayer(){
+  if(shieldT>0){
+    shieldT=0;
+    addFx('SHIELD BREAK!',P.x,P.y-24,'#0f8',15);
+    doShake(5,.25);flashIt('rgba(0,255,136,.25)');updateHUD();return;
+  }
+  rapidT=0;pierceT=0;
   lives--;P.invT=2.5;P.weapon=1;P.wpTimer=0;P.fireT=.5;
   doShake(8,.38);flashIt('rgba(255,0,0,.4)');explode(P.x,P.y,'A');
   if(lives<=0){P.alive=false;setTimeout(()=>{STATE='GAMEOVER';if(score>hiScore){hiScore=score;localStorage.setItem('LocalMaxScore',hiScore);}},1800);}

@@ -20,8 +20,12 @@ function drawBullets(){
         cx.fillStyle=`rgba(255,${120-i*30},0,${.5-i*.12})`;
         cx.fillRect(b.x-PX/2,b.y+i*PX*1.5,PX,PX);
       }
+    } else if(b.pcol) {
+      // 관통탄 – 보라색
+      cx.fillStyle='#cc44ff';cx.fillRect(Math.round(b.x-1),Math.round(b.y-6),2,6);
+      cx.fillStyle='#ffffff';cx.fillRect(Math.round(b.x-1),Math.round(b.y-6),2,2);
     } else {
-      // Normal bullet – 2×4 bright pixel
+      // 일반 탄 – 밝은 시안
       cx.fillStyle='#ccffff';cx.fillRect(Math.round(b.x-1),Math.round(b.y-6),2,6);
       cx.fillStyle='#ffffff';cx.fillRect(Math.round(b.x-1),Math.round(b.y-6),2,2);
     }

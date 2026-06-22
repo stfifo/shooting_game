@@ -17,6 +17,12 @@ function drawHUDCanvas(){
   if(ghostT>0&&ghostT<4){cx.globalAlpha=Math.min(1,ghostT);cx.fillStyle='#8df';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`WING ${Math.ceil(ghostT)}s`,W-14,H-46);cx.globalAlpha=1;cx.textAlign='left';}
   if(fireballT>0){cx.globalAlpha=.8+.18*Math.sin(performance.now()*.01);cx.fillStyle='#f60';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`FIREBALL ${Math.ceil(fireballT)}s`,W-14,H-64);cx.globalAlpha=1;cx.textAlign='left';}
   if(combo>2&&comboT>0){cx.globalAlpha=Math.min(1,comboT);cx.fillStyle='#f80';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`${combo}x COMBO`,W-14,H-10);cx.globalAlpha=1;cx.textAlign='left';}
+  // 좌측 파워업 타이머 (쉴드/속사/관통탄)
+  let lhud=H-10;
+  if(shieldT>0){const a=shieldT<3?(Math.floor(performance.now()/220)%2?.9:.3):.85;cx.globalAlpha=a;cx.fillStyle='#00ff88';cx.font='bold 12px Courier New';cx.textAlign='left';cx.fillText(`◈ SHIELD ${Math.ceil(shieldT)}s`,14,lhud);cx.globalAlpha=1;lhud-=17;}
+  if(rapidT>0){cx.globalAlpha=.8+.18*Math.sin(performance.now()*.013);cx.fillStyle='#0ff';cx.font='bold 12px Courier New';cx.textAlign='left';cx.fillText(`⚡ RAPID ${Math.ceil(rapidT)}s`,14,lhud);cx.globalAlpha=1;lhud-=17;}
+  if(pierceT>0){cx.globalAlpha=.8+.18*Math.sin(performance.now()*.013);cx.fillStyle='#c0f';cx.font='bold 12px Courier New';cx.textAlign='left';cx.fillText(`▶ PIERCE ${Math.ceil(pierceT)}s`,14,lhud);cx.globalAlpha=1;}
+  cx.textAlign='left';
   if(betweenWave){
     const prog=Math.max(0,1-betweenT/1.5);
     cx.fillStyle='rgba(0,0,0,.72)';cx.fillRect(0,H*.35,W,112);
@@ -142,13 +148,53 @@ function drawIdle(){
   cx.textAlign='left';
 }
 function drawPaused(){
-  cx.fillStyle='rgba(0,0,0,.62)';cx.fillRect(0,0,W,H);
-  cx.fillStyle='rgba(255,255,255,.05)';cx.fillRect(W/2-104,H/2-52,208,96);
-  cx.strokeStyle='#2e2e2e';cx.lineWidth=1;cx.strokeRect(W/2-104,H/2-52,208,96);
+  cx.fillStyle='rgba(0,0,0,.75)';cx.fillRect(0,0,W,H);
   cx.textAlign='center';
-  cx.fillStyle='#ffffff';cx.font='bold 34px Courier New';cx.fillText('PAUSED',W/2,H/2-6);
-  cx.fillStyle='#555';cx.font='12px Courier New';cx.fillText('[P]  to resume',W/2,H/2+28);
-  cx.textAlign='left';
+
+  // ── PAUSED 타이틀 ──
+  cx.shadowBlur=18;cx.shadowColor='#4af';cx.fillStyle='#88ddff';
+  cx.font='bold 38px Courier New';cx.fillText('PAUSED',W/2,H/2-148);
+  cx.shadowBlur=0;
+
+  // ── 스테이터스 카드 (웨이브 + 점수) ──
+  const sx=W/2-116,sy=H/2-130,sw=232,sh=50;
+  cx.fillStyle='rgba(255,255,255,.04)';cx.fillRect(sx,sy,sw,sh);
+  cx.strokeStyle='#2a3a4a';cx.lineWidth=1;cx.strokeRect(sx,sy,sw,sh);
+  // 웨이브
+  cx.fillStyle='#445566';cx.font='9px Courier New';cx.textAlign='left';
+  cx.fillText('WAVE',sx+14,sy+16);
+  cx.fillStyle='#aaddff';cx.font='bold 20px Courier New';
+  cx.fillText(String(wave||'-').padStart(2,' '),sx+14,sy+40);
+  // 구분선
+  cx.strokeStyle='#1e2e3e';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(W/2,sy+8);cx.lineTo(W/2,sy+sh-8);cx.stroke();
+  // 점수
+  cx.fillStyle='#445566';cx.font='9px Courier New';cx.textAlign='right';
+  cx.fillText('SCORE',sx+sw-14,sy+16);
+  cx.fillStyle='#ffee88';cx.font='bold 20px Courier New';
+  cx.fillText(String(score).padStart(8,'0'),sx+sw-14,sy+40);
+
+  // ── 조작법 박스 ──
+  const cx2=W/2,cy=H/2-58;
+  const bx=W/2-116,bh=120;
+  cx.fillStyle='rgba(255,255,255,.03)';cx.fillRect(bx,cy,232,bh);
+  cx.strokeStyle='#222';cx.lineWidth=1;cx.strokeRect(bx,cy,232,bh);
+  cx.fillStyle='#334';cx.font='9px Courier New';cx.textAlign='center';
+  cx.fillText('— CONTROLS —',W/2,cy+14);
+  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['BOMB','Z'],['SKILL','X  (20킬 충전 후)'],['PAUSE','P']];
+  ctrl.forEach(([k,v],i)=>{
+    const y=cy+30+i*20;
+    cx.fillStyle='#3a4a5a';cx.textAlign='right';cx.font='9px Courier New';cx.fillText(k,W/2-10,y);
+    cx.fillStyle='#99bbcc';cx.textAlign='left';cx.font='bold 9px Courier New';cx.fillText(v,W/2+10,y);
+  });
+
+  // ── 재개 프롬프트 ──
+  const blink=Math.floor(performance.now()/600)%2===0;
+  cx.shadowBlur=blink?8:0;cx.shadowColor='#4af';
+  cx.fillStyle=blink?'#88ddff':'#223344';
+  cx.font='bold 13px Courier New';cx.textAlign='center';
+  cx.fillText('[ P ]  RESUME',W/2,H/2+76);
+  cx.shadowBlur=0;cx.textAlign='left';
 }
 function drawGameOver(){
   cx.fillStyle='rgba(0,0,0,.82)';cx.fillRect(0,0,W,H);cx.textAlign='center';

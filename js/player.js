@@ -34,6 +34,14 @@ function drawPlayer(){
     for(let r=-2;r<=2;r++)for(let c=-2;c<=2;c++)if(r*r+c*c<6)cx.fillRect(Math.round(P.x+c*PX*2),Math.round(P.y+r*PX*2),PX*2,PX*2);
     cx.globalAlpha=1;
   }
+  // 방어막 링 (쉴드 활성 시)
+  if(shieldT>0){
+    const pulse=.5+.4*Math.sin(performance.now()*.009);
+    const fading=shieldT<3?shieldT/3:1;
+    cx.globalAlpha=pulse*fading;cx.strokeStyle='#00ff88';cx.lineWidth=2.5;
+    cx.beginPath();cx.arc(Math.round(P.x),Math.round(P.y),34,0,Math.PI*2);cx.stroke();
+    cx.globalAlpha=1;cx.lineWidth=1;
+  }
   drawShipAt(P.x,P.y,PAL_P,P.propA,'80,160,255');
 }
 
@@ -49,17 +57,21 @@ function updatePlayer(dt){
   if(P.fireT<=0){
     shootFrom(P.x,P.y-P.h/2+4,P.weapon);
     if(ghostT>0){shootFrom(P.x-65,P.y+8,P.weapon);shootFrom(P.x+65,P.y+8,P.weapon);}
-    P.fireT=P.weapon===5?.22:FIRE_RATE;
+    P.fireT=P.weapon===5?(rapidT>0?.12:.22):(rapidT>0?FIRE_RATE*.45:FIRE_RATE);
   }
   if(P.invT>0)P.invT-=dt;
   if(P.wpTimer>0){P.wpTimer-=dt;if(P.wpTimer<=0&&!fireballT)P.weapon=1;}
   if(fireballT>0){fireballT-=dt;if(fireballT<=0){fireballT=0;P.weapon=1;P.wpTimer=0;}}
   if(ghostT>0){ghostT-=dt;if(ghostT<0)ghostT=0;}
+  if(rapidT>0){rapidT-=dt;if(rapidT<0)rapidT=0;}
+  if(pierceT>0){pierceT-=dt;if(pierceT<0)pierceT=0;}
+  if(shieldT>0){shieldT-=dt;if(shieldT<0)shieldT=0;}
 }
 
 function shootFrom(x,y,wpn){
-  const sp=480,fb=wpn===5;
-  const mk=(ox,oy,vx,vy)=>({x:x+ox,y:y+oy,vx,vy,w:fb?14:4,h:fb?14:12,dmg:fb?2:1,pierce:fb,hset:fb?new Set():null,alive:true,fireball:fb});
+  const sp=480,fb=wpn===5,doPierce=fb||pierceT>0;
+  const mk=(ox,oy,vx,vy)=>({x:x+ox,y:y+oy,vx,vy,w:fb?14:4,h:fb?14:12,dmg:fb?2:1,
+    pierce:doPierce,hset:doPierce?new Set():null,alive:true,fireball:fb,pcol:!fb&&pierceT>0});
   switch(wpn){
     case 1:pBullets.push(mk(0,0,0,-sp));break;
     case 2:pBullets.push(mk(-7,0,0,-sp));pBullets.push(mk(7,0,0,-sp));break;
