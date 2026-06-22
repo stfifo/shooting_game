@@ -27,6 +27,7 @@ Claude Code로 만든 프로젝트를 대상으로 출력 품질을 1) 기계(LL
 7. 아래 보고서 작성 지침에 따라 보고서를 작성해라
 
 ## 보고서 작성 지침
+- 보고서는 "C:\Users\eaee2\dev\assign_genAI\assign3\eval_report.md" 에 작성하라
 - 선택한 평가 방식 2가지와 선택 이유
 - 사람 점수 vs 기계 점수 비교표
 - Cohen's Kappa 값 (`weights=None` / `weights='quadratic'` 각각)
