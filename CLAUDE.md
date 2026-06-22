@@ -79,26 +79,34 @@ assign3/
 - **HOLD**: 피벗이 좌우로 스윕. `holdT`(3.5~5.5초) 소진 후 ATTACK으로 전환.
 - **ATTACK**: 멤버가 플레이어를 향해 돌격, 화면 아래로 나가면 재진입.
 
+**대형(FMTS)**: SOLO / TWIN2 / V5 / LINE5 / LINE7 / ARROW7 / BOX9 / **CIRCLE8**(원형) / **DIAMOND6**(다이아몬드) / **ZIGZAG6**(지그재그)
+
+**진입 경로(ENTRY)**: TOP / LEFT / RIGHT / DIVEL / DIVER / SWING / **SNEAK_L**(좌벽 잠입) / **SNEAK_R**(우벽 잠입) / **LOOP**(급강하 후 복귀)
+
 **전원 사망 시 단계 진행**: 멤버가 ENTER 중 전원 사망하면 HOLD로 전환하고 `holdT`를 정상 소진한 뒤 ATTACK으로 넘어간다. HOLD 중 전원 사망하면 `holdT` 남은 시간을 계속 카운트다운한 뒤 ATTACK으로 전환한다. `squadDone(sq)` 는 `phase==='ATTACK'` 이고 전원 사망한 경우에만 `true`를 반환한다 — ENTER/HOLD 단계에서 일찍 전멸해도 wave clear가 즉시 트리거되지 않는다.
 
-`WAVE_NORMAL` 배열(12패턴)이 순환하며 비보스 웨이브를 정의. `waveIdx % 5 === 0` 이면 보스 웨이브.
+비보스 웨이브는 `randWave(n)` 으로 매번 랜덤 생성. 보스 웨이브는 `waveIdx % 5 === 0`.
 
 ### 보스 시스템
 - `startBossWarning()` → 3.5초 경고 연출 → `spawnBossNow()` 순서로 진행.
 - **중요**: `updateWaves()` 의 wave-clear 조건에 `!bossWarnActive` 가 반드시 포함되어야 한다. 없으면 경고 중 편대가 전멸할 때 보스가 스폰되기 전에 다음 웨이브로 넘어가는 버그 발생.
 - 보스 HP %에 따라 `phase 1→2→3` 자동 전환, 이동 속도·발사 패턴 에스컬레이션.
+- **티어별 스케일링**: HP=`80+tier*90`(tier1→170, tier4→440), 이동속도 배율=`0.6+tier*0.1`, 발사간격 배율=`1.8-tier*0.2`. tier 1이 가장 느리고 약하며, tier 4는 원본 수치와 동일.
 
 ### 총알·충돌
 `pBullets`(플레이어), `eBullets`(적) 배열. `ovlp(a,b)` AABB 충돌.  
-파이어볼 탄은 `pierce:true`, `hset: Set` 으로 관통 처리(같은 적에게 중복 피해 방지).
+파이어볼 탄은 `pierce:true`, `hset: Set` 으로 관통 처리(같은 적에게 중복 피해 방지).  
+관통탄 아이템(`pierceT>0`) 적용 시에도 동일 관통 플래그(`doPierce=true`)가 설정되며, 보라색(`pcol:true`)으로 표시된다.  
+`hitPlayer()`는 `shieldT>0` 이면 피격을 흡수하고 `shieldT=0` 으로 초기화(실제 피격 시 `rapidT`/`pierceT`도 초기화).
 
 ### 파티클
 `parts[]` 배열. 파티클 종류: `spark / debris / smoke / ring`. `explode()` 가 4종류를 함께 생성.
 
 ### HUD
 - DOM 업데이트: `updateHUD()` — 점수, 생명, 폭탄, 스킬 게이지.
-- Canvas 위 오버레이: `drawHUDCanvas()` — 콤보, 스킬 준비, 웨이브 클리어 배너.
+- Canvas 위 오버레이: `drawHUDCanvas()` — 콤보, 스킬 준비, 웨이브 클리어 배너. 화면 좌측 하단에 활성 파워업 타이머(◈ SHIELD / ⚡ RAPID / ▶ PIERCE) 스택 표시.
 - 우측 수직 진행 바: `drawProgressBar()` — wave 1~`TOTAL_WAVES`(20) 진행률, 보스 마커 포함.
+- `drawPaused()`: 현재 웨이브·점수 카드 + 전체 조작법(이동/사격/폭탄/스킬/일시정지) + 깜빡이는 재개 안내 표시.
 
 ### 주요 상수 (변경 시 밸런스 영향)
 
@@ -110,6 +118,9 @@ assign3/
 | `GHOST_DUR` | 15 | 윙맨 지속 시간(초) |
 | `BOMB_MAX` | 3 | 폭탄 최대 보유 수 |
 | `FIRE_RATE` | 0.13 | 기본 연사 간격(초) |
+| `RAPID_DUR` | 8 | 속사(R) 아이템 지속 시간(초) — 연사 간격 ×0.45 |
+| `PIERCE_DUR` | 10 | 관통탄(N) 아이템 지속 시간(초) |
+| `SHIELD_DUR` | 12 | 쉴드(S) 아이템 지속 시간(초) — 피격 1회 흡수 |
 
 ## 수동 백업
 
@@ -133,6 +144,57 @@ assign3/
 
 ---
 
+## 게임 전체 흐름
+
+총 **20웨이브**, 5웨이브마다 보스 → **보스 4회** 등장. 웨이브 20 보스 처치 시 클리어.
+
+| 웨이브 | 배경 | 스크롤 속도 | 구분 |
+|---|---|---|---|
+| 1 – 4 | 지구 (Earth) | 20 px/s | 일반 |
+| **5** | 대기권 전환 | – | **보스 tier 1** (HP 170) |
+| 6 – 9 | 대기권 (Atmosphere) | 42 px/s | 일반 |
+| **10** | 화성 전환 | – | **보스 tier 2** (HP 260) |
+| 11 – 14 | 화성 (Mars) | 68 px/s | 일반 |
+| **15** | 심우주 전환 | – | **보스 tier 3** (HP 350) |
+| 16 – 19 | 심우주 (Deep Space) | 100 px/s | 일반 |
+| **20** | 심우주 | – | **보스 tier 4** (HP 440, 최종) |
+
+### 보스 티어별 수치
+
+| tier | 웨이브 | HP | 이동속도 배율 | 발사간격 배율 | 호위 편대 | 처치 점수 |
+|---|---|---|---|---|---|---|
+| 1 | 5 | 170 | ×0.7 | ×1.6 (느림) | 없음 | 1,800 |
+| 2 | 10 | 260 | ×0.8 | ×1.4 | A-LINE5 (5기) | 2,400 |
+| 3 | 15 | 350 | ×0.9 | ×1.2 | A-LINE5 + B-TWIN2 | 3,000 |
+| 4 | 20 | 440 | ×1.0 | ×1.0 | A-LINE5 + B-TWIN2 | 3,600 |
+
+### 보스 내부 페이즈 (HP % 기준, 모든 tier 공통)
+
+| 페이즈 | 조건 | 기본 발사 | 기준 간격 | 이동 | 특수 공격 (`bossSpecial`) |
+|---|---|---|---|---|---|
+| 1 | HP > 66% | 3방향 고정 | 1.35s × shootMul | 수평 왕복 | **CROSS** — 대각선 4방향탄 (7s 주기) |
+| 2 | HP 33–66% | 5방향 + 유도탄 50% | 0.95s × shootMul | 수평 지그재그 (`dodgeT` 0.8–1.8s) | **BURST** — 플레이어 방향 3발 부채꼴 유도탄 (5.5s 주기) |
+| 3 | HP < 33% | 7방향 + 유도탄 2발 | 0.65s × shootMul | 수평 + 사인파 상하 | **VOLLEY** — 플레이어 방향 5발 집중탄 (4s 주기) |
+
+**페이즈 전환 시 즉시 `bossSpecial()` 발동** — 체력 임계값 돌파 순간 rage shot.
+
+**미니언 소환**: Phase 2는 A형 2기 / Phase 3는 A형 3기 (tier 3+ Phase 3는 C형 3기).
+
+### 일반 웨이브 랜덤 생성 (`randWave(n)`)
+
+비보스 웨이브는 매번 `randWave(n)`이 티어 기반으로 무작위 편대를 생성한다. 플레이마다 다른 패턴이 등장한다.
+
+| 티어 | 웨이브 | 편대 수 | 적 종류 풀 |
+|---|---|---|---|
+| 1 | 1–4 | 1–2 | A 위주 (A×4, B×1) |
+| 2 | 6–9 | 1–3 | A/B 동등 + C |
+| 3 | 11–14 | 2–3 | B/C 비율 증가 |
+| 4 | 16–19 | 2–4 | B/C 위주 |
+
+각 편대의 대형(FMTS)·진입 경로(ENTRY)·피벗 X·목표 Y는 모두 랜덤. 대형 최대 너비(`maxSp`)를 고려해 피벗 X 범위를 제한하여 화면 밖 배치를 방지한다.
+
+---
+
 ## 구현된 기능 목록
 
 | 카테고리 | 기능 |
@@ -141,15 +203,17 @@ assign3/
 | **특수 능력** | 폭탄(Z, 전체 적 제거·보스 25% 데미지), 스킬(X, 킬 20회 충전 후 파이어볼 전환) |
 | **무기 시스템** | SINGLE → DOUBLE → TRIPLE → SPREAD → FIREBALL (5종), 피격 시 SINGLE 복귀 |
 | **윙맨** | 아이템 획득 시 15초간 좌우 고스트 전투기 동행 |
-| **적 편대** | A/B/C 3종 적, 12가지 WAVE_NORMAL 패턴 순환, 큐빅 베지어 진입 경로 |
-| **보스** | 5웨이브마다 등장, HP%에 따른 phase 1→2→3 자동 전환, 미니언 소환(phase 2+) |
+| **적 편대** | A/B/C 3종 적, `randWave(n)` 랜덤 생성(FMTS 9종·ENTRY 8종 조합), 큐빅 베지어 진입 경로 |
+| **보스** | 5웨이브마다 등장, HP%에 따른 phase 1→2→3 자동 전환, 미니언 소환(phase 2+), CROSS/BURST/VOLLEY 특수 공격 |
 | **보스 경고 연출** | 3.5초 전체 화면 빨간 플래시 + WARNING 텍스트 + 카운트다운 |
-| **아이템 드롭** | P(파워업), B(폭탄), F(윙맨), L(목숨) 4종 랜덤 드롭 |
+| **아이템 드롭** | P(파워업), B(폭탄), F(윙맨), L(목숨), R(속사), N(관통탄), S(쉴드) 7종 랜덤 드롭 |
+| **파워업 아이템** | R: 8초 연사속도 ×2.2 / N: 10초 관통탄(보라색) / S: 12초 쉴드 1회 피격 흡수 |
 | **배경** | 4단계 스크롤 배경 (지구→대기권→화성→심우주), 웨이브별 스크롤 속도 차등 |
 | **파티클** | spark/debris/smoke/ring 4종 폭발 이펙트, 피격 스파크, 플로팅 텍스트 |
-| **HUD** | 점수/최고점/웨이브(DOM), 콤보/스킬준비/진행바/보스HP(Canvas) |
+| **HUD** | 점수/최고점/웨이브(DOM), 콤보/스킬준비/진행바/보스HP/파워업타이머(Canvas) |
 | **진행 바** | 우측 4px 수직 바, 보스웨이브 빨간 마커, 완주 시 점멸 강조 |
 | **화면 전환** | IDLE → PLAYING → PAUSED / GAMEOVER, 각 전용 오버레이 |
+| **일시정지 화면** | 현재 웨이브·점수 카드 + 전체 조작법 안내 + 재개 안내 표시 |
 | **키 피드백** | 누른 키 실시간 하이라이트 (HTML .key.active CSS) |
 | **점수 저장** | localStorage 최고 점수 영속 저장 |
 
@@ -173,7 +237,7 @@ Enemy Definitions  (EDEFS: A/B/C — hp, pts, w, h, sRate)
 Bullets            (pBullets[], eBullets[], updateBullets, drawBullets)
 Formations         (FMTS, ENTRY, makeSquad, updateSquad, getEnemies)
 Boss               (startBossWarning, spawnBossNow, updateBoss, bossShoot, killBoss)
-Wave Definitions   (WAVE_NORMAL[12], launchWave, updateWaves)
+Wave Definitions   (randWave(n), launchWave, updateWaves)
 Items              (pups[], dropItem, updateItems, drawItems, ITEM_COLS)
 Pixel Particles    (parts[], fxts[], explode, addHitSpark, addFx, flashIt, doShake)
 Boss Warning       (drawBossWarning — 전체화면 오버레이 연출)
@@ -201,6 +265,7 @@ Game Loop          (startGame, update, draw, loop)
 | `bgPhase`, `bgBlend` | number | 배경 단계(0~3), 전환 보간값(0~1) |
 | `waveIdx`, `betweenWave` | number/bool | 현재 웨이브 인덱스, 웨이브간 대기 상태 |
 | `bossWarnActive`, `bossWave` | bool | 경고 연출 진행 중, 보스 웨이브 여부 |
+| `rapidT`, `pierceT`, `shieldT` | number | 속사/관통탄/쉴드 파워업 남은 시간(초) |
 
 ### 데이터 흐름 (프레임당)
 ```
