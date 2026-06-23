@@ -272,7 +272,7 @@ def parse_human_scores() -> list[dict]:
         i += 2
 
         def get_score(label: str) -> int | None:
-            pattern = rf"\|\s*{re.escape(label)}\s*\|\s*(\d)\s*\|"
+            pattern = rf"\|\s*{re.escape(label)}\s*\|\s*\[?(\d)\]?\s*\|"
             m = re.search(pattern, content)
             return int(m.group(1)) if m else None
 
