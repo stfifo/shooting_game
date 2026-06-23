@@ -22,7 +22,7 @@ BASE_DIR   = Path(__file__).parent.parent        # assign3/
 BACKUPS    = BASE_DIR / "backups"
 EVAL_DIR   = Path(__file__).parent               # eval/
 SCORES_PATH = EVAL_DIR / "llm_scores.json"
-REPORT_PATH = BASE_DIR / "eval_report.md"
+REPORT_PATH = EVAL_DIR / "eval_report.md"
 RUBRIC_PATH = EVAL_DIR / "rubric.md"
 PERSON_PATH = EVAL_DIR / "person_eval.md"
 

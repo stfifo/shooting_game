@@ -42,15 +42,22 @@ assign3/
 │   ├── collisions.js     # 충돌 감지 + 전투 처리
 │   ├── hud.js            # HUD + 오버레이 화면
 │   └── game.js           # 게임 루프 (startGame, update, draw, loop)
-├── backups/              # 자동 백업 (NNN_YYYYMMDD_HHmmss/ 폴더)
+├── backups/              # 수동 백업 (NNN_YYYYMMDD_HHmmss/ 폴더)
+├── eval/                 # 평가 시스템
+│   ├── eval_script.py    # LLM 자동 평가 + Kappa 계산 + 보고서 작성
+│   ├── rubric.md         # 평가 기준 (M1 3차원 + M2 종합 Rubric)
+│   ├── person_eval.md    # 사람 평가 점수 입력 양식
+│   ├── llm_scores.json   # LLM 자동 평가 결과 (TC-01~10)
+│   └── eval_report.md    # 최종 평가 보고서 (--kappa 모드로 생성)
 ├── report.md             # 과제 보고서
 └── .claude/
-    ├── settings.json     # 훅 설정 (자동 백업, 알림, 완료 메시지)
+    ├── settings.json     # 훅 설정 (백업, 알림, 완료 메시지)
     └── commands/         # 커스텀 슬래시 커맨드
         ├── design.md     # /design — 시각 디자인 개선
         ├── logic.md      # /logic  — 게임 로직·밸런스 개선
         ├── uiux.md       # /uiux   — UI/UX 개선
-        └── refactor.md   # /refactor — 코드 구조 개선
+        ├── refactor.md   # /refactor — 코드 구조 개선
+        └── eval.md       # /eval   — LLM-as-Judge 평가 + Cohen's Kappa
 ```
 
 ## game.html 아키텍처
@@ -137,6 +144,7 @@ assign3/
 | `/logic` | 적 패턴, 밸런스, 보스 페이즈, 아이템 드롭 |
 | `/uiux` | HUD 배치, 화면 전환 흐름, 키 피드백 |
 | `/refactor` | 함수 분리, 상수 추출, 한국어 주석 — 동작 변경 없이 구조만 |
+| `/eval` | Claude Code 출력 LLM-as-Judge 평가 + 사람 평가 + Cohen's Kappa 측정 |
 
 ## 로컬 영구 저장
 
@@ -203,7 +211,7 @@ assign3/
 | **특수 능력** | 폭탄(Z, 전체 적 제거·보스 25% 데미지), 스킬(X, 킬 20회 충전 후 파이어볼 전환) |
 | **무기 시스템** | SINGLE → DOUBLE → TRIPLE → SPREAD → FIREBALL (5종), 피격 시 SINGLE 복귀 |
 | **윙맨** | 아이템 획득 시 15초간 좌우 고스트 전투기 동행 |
-| **적 편대** | A/B/C 3종 적, `randWave(n)` 랜덤 생성(FMTS 9종·ENTRY 8종 조합), 큐빅 베지어 진입 경로 |
+| **적 편대** | A/B/C 3종 적, `randWave(n)` 랜덤 생성(FMTS 10종·ENTRY 9종 조합), 큐빅 베지어 진입 경로 |
 | **보스** | 5웨이브마다 등장, HP%에 따른 phase 1→2→3 자동 전환, 미니언 소환(phase 2+), CROSS/BURST/VOLLEY 특수 공격 |
 | **보스 경고 연출** | 3.5초 전체 화면 빨간 플래시 + WARNING 텍스트 + 카운트다운 |
 | **아이템 드롭** | P(파워업), B(폭탄), F(윙맨), L(목숨), R(속사), N(관통탄), S(쉴드) 7종 랜덤 드롭 |
@@ -293,7 +301,7 @@ loop(ts)
 
 ## 아키텍처 핵심
 
-1. **단일 파일 구조** — HTML+CSS+JS 전부 `game.html` 하나. 빌드·번들러·서버 불필요.
+1. **빌드 없는 구조** — `game.html`(HTML 셸) + `style.css` + `js/` 17개 파일. 서버·번들러·패키지 설치 불필요. `file://`로 직접 열면 즉시 실행.
 2. **requestAnimationFrame 루프** — `loop(ts)→update(dt)→draw()` 고정 패턴. `dt=min((ts-lastT)/1000, 0.05)` 로 프레임 스파이크 보정.
 3. **상태 머신 조기 반환** — `update(dt)` 첫 줄에 `if(STATE!=='PLAYING')return`. 오버레이 렌더는 `draw()` 마지막에 STATE별 분기.
 4. **픽셀 아트 렌더러** — `pxDraw(data, pal, ox, oy)`: 2D 숫자 배열 → `fillRect` 타일. `PX=3`이 전체 픽셀 스케일 기준. `cx.imageSmoothingEnabled=false`.
