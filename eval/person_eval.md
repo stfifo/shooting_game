@@ -55,11 +55,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [2] | |
+| Completeness | [3] | |
+| Visual Design | [2] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [2] | |
 
 ---
 
@@ -73,11 +73,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [2] | |
+| Completeness | [3] | |
+| Visual Design | [2] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [2] | |
 
 ---
 
@@ -91,11 +91,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [2] | |
+| Completeness | [3] | |
+| Visual Design | [2] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [2] | |
 
 ---
 
@@ -109,11 +109,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [3] | |
+| Completeness | [3] | |
+| Visual Design | [3] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [3] | |
 
 ---
 
@@ -127,11 +127,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [3] | |
+| Completeness | [3] | |
+| Visual Design | [3] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [3] | |
 
 ---
 
@@ -145,11 +145,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [4] | |
+| Completeness | [4] | |
+| Visual Design | [3] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [3] | |
 
 ---
 
@@ -163,11 +163,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [4] | |
+| Completeness | [4] | |
+| Visual Design | [3] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [4] | |
 
 ---
 
@@ -181,11 +181,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [4] | |
+| Completeness | [4] | |
+| Visual Design | [4] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [4] | |
 
 ---
 
@@ -199,11 +199,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [5] | |
+| Completeness | [5] | |
+| Visual Design | [4] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [4] | |
 
 ---
 
@@ -217,11 +217,11 @@
 
 | 차원 | 점수 | 메모 |
 |---|---|---|
-| Correctness  | [ ] | |
-| Completeness | [ ] | |
-| Visual Design | [ ] | |
+| Correctness  | [5] | |
+| Completeness | [5] | |
+| Visual Design | [4] | |
 | **M1 평균** | *자동* | |
-| **M2 종합** | [ ] | |
+| **M2 종합** | [5] | |
 
 ---
 
