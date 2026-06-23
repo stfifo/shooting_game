@@ -1,0 +1,102 @@
+[
+  {
+    "id": "TC-01",
+    "folder": "001_20260620_170745",
+    "correctness": 3,
+    "completeness": 4,
+    "visual_design": 4,
+    "m1_avg": 3.67,
+    "m2": 3,
+    "reasoning": "최초 구현으로 기본 게임 루프·배경·적·보스·HUD 등 핵심 시스템이 갖춰져 있다. 그러나 squadDone()이 HOLD 단계에서도 true를 반환하여(phase!=='DELAY'&&phase!=='ENTER' 조건 누락) 편대 전원 사망 시 wave가 조기 클리어되는 버그가 있다. 보스 HP 공식이 180+tier*65(스펙과 불일치)이고 티어별 스케일링 미구현. CSS가 game.html 내 인라인 <style>에 포함되어 있으며 키 색상이 #333(어두워 거의 보이지 않음)."
+  },
+  {
+    "id": "TC-02",
+    "folder": "002_20260620_172127",
+    "correctness": 4,
+    "completeness": 5,
+    "visual_design": 3,
+    "m1_avg": 4.0,
+    "m2": 4,
+    "reasoning": "CSS를 style.css로 분리하고 game.html을 순수 HTML 셸로 리팩터링. <link rel='stylesheet' href='style.css'>가 올바르게 추가되고 인라인 <style> 제거됨. JS 17개 파일 로드 순서도 정상. 리팩터링 자체는 완전하고 회귀 없음. 다만 squadDone HOLD 버그는 그대로이며, style.css의 .key{color:#333}이 유지되어 키 가시성이 낮다."
+  },
+  {
+    "id": "TC-03",
+    "folder": "003_20260620_173130",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 5,
+    "m1_avg": 5.0,
+    "m2": 4,
+    "reasoning": "style.css의 키 색상을 #333→#aaa로 개선하여 키 피드백 가시성을 크게 높임. .key small: #2b2b2b→#777, .key.active small: #bb6600→#cc8800, #keyBar 배경·테두리도 약간 밝아짐. CSS 변경 사항이 정확하고 완전하다. M2는 4 — 작지만 명확한 시각적 개선."
+  },
+  {
+    "id": "TC-04",
+    "folder": "004_20260620_173609",
+    "correctness": 2,
+    "completeness": 3,
+    "visual_design": 3,
+    "m1_avg": 2.67,
+    "m2": 3,
+    "reasoning": "formations.js의 squadDone이 TC-01보다 오히려 퇴행됨: TC-01은 !=='DELAY'&&!=='ENTER' 이중 조건이었으나 TC-04는 !=='DELAY' 단일 조건으로 변경되어 ENTER 단계 전원 사망 시에도 squadDone=true가 되는 더 심각한 버그를 도입. 조작법 색상 변경은 hud.js에서 확인되지 않음(formations.js만 변경됨 확인). 핵심 편대 FSM의 회귀로 correctness 2."
+  },
+  {
+    "id": "TC-05",
+    "folder": "005_20260620_174938",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 4,
+    "m1_avg": 4.67,
+    "m2": 5,
+    "reasoning": "squadDone 버그가 두 부분 모두 완전히 수정됨. (1) squadDone: phase==='ATTACK'&&every(!alive) — ATTACK 단계 한정. (2) updateSquad dead-squad 핸들링: ENTER→HOLD 전이 후 holdT 카운트다운→ATTACK 전환. CLAUDE.md 스펙과 정확히 일치. 시각 변경 없음. M2는 5 — 게임 진행 로직의 핵심 버그 완전 해결."
+  },
+  {
+    "id": "TC-06",
+    "folder": "006_20260622_094525",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 4,
+    "m1_avg": 4.67,
+    "m2": 5,
+    "reasoning": "보스 티어별 스케일링이 스펙과 정확히 일치: HP=80+tier*90(tier1→170, tier4→440), speedMul=0.6+tier*0.1, shootMul=1.8-tier*0.2. spawnBossNow에서 계산, updateBoss/bossShoot에서 각각 적용됨. bossSpawnMinions phase2+ 미니언 소환도 정상. 시각 변경 없음. M2는 5 — 4단계 난이도 곡선이 명확해짐."
+  },
+  {
+    "id": "TC-07",
+    "folder": "007_20260622_095416",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 5,
+    "m1_avg": 5.0,
+    "m2": 5,
+    "reasoning": "보스 특수 공격 3종 완전 구현: CROSS(45°/135°/225°/315° 4방향탄), BURST(플레이어 방향 3발 C형 부채꼴), VOLLEY(플레이어 방향 5발 집중). 주기 [7s/5.5s/4s] 스펙 일치. 페이즈 전환 시 즉시 bossSpecial() 발동. Phase 2 dodgeT(0.8~1.8s) 지그재그 추가. bossSpawnMinions: phase3=3기, tier3+ phase3=C형. 각 특수 공격에 CROSS!/BURST!/VOLLEY! FX 텍스트 표시."
+  },
+  {
+    "id": "TC-08",
+    "folder": "008_20260622_100337",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 5,
+    "m1_avg": 5.0,
+    "m2": 5,
+    "reasoning": "파워업 아이템 3종(R/N/S) 완전 구현: applyItem에서 rapidT/pierceT/shieldT 설정. 드롭 확률 R:4%, N:3%, S:3%. ITEM_COLS에 7종 모두 포함. HUD 타이머: ◈ SHIELD(#00ff88), ⚡ RAPID(#0ff), ▶ PIERCE(#c0f) 스택 표시, 쉴드 3초 미만 시 깜빡임 효과. 아이템 픽셀아트 다이아몬드 형태에 타입 레터 표시. 일시정지 화면 개선 포함."
+  },
+  {
+    "id": "TC-09",
+    "folder": "009_20260622_100841",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 5,
+    "m1_avg": 5.0,
+    "m2": 5,
+    "reasoning": "편대 대형 3종 추가: CIRCLE8(타원형 8기), DIAMOND6(다이아몬드 6기), ZIGZAG6(지그재그 6기). 진입 경로 3종 추가: SNEAK_L(좌벽), SNEAK_R(우벽), LOOP(급강하-복귀). waves.js도 동시에 randWave(n)으로 전환하여 9개 대형×9개 진입 경로 전체가 즉시 게임에 활용됨. maxSp 기반 피벗 X 범위 제한으로 화면 밖 배치 방지. 편대 배치 다양성 대폭 증가."
+  },
+  {
+    "id": "TC-10",
+    "folder": "010_20260622_101532",
+    "correctness": 5,
+    "completeness": 5,
+    "visual_design": 5,
+    "m1_avg": 5.0,
+    "m2": 5,
+    "reasoning": "최종 통합 상태. TC-09 대비 constants.js에 RAPID_DUR=8, PIERCE_DUR=10, SHIELD_DUR=12 상수가 명시적으로 추출됨. CLAUDE.md가 모든 기능을 완전히 반영한 최종본으로 업데이트. waves.js, formations.js 등 핵심 로직은 TC-09와 동일. 파이어볼 관통(pierce:true, hset:Set), 쉴드 피격 흡수(hitPlayer shieldT 초기화) 등 모든 메커니즘 통합 정상."
+  }
+]
