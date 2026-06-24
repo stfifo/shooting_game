@@ -25,7 +25,7 @@ function drawHUDCanvas(){
   cx.textAlign='left';
   if(betweenWave){
     const prog=Math.max(0,1-betweenT/1.5);
-    cx.fillStyle='rgba(0,0,0,.72)';cx.fillRect(0,H*.35,W-12,112);
+    cx.fillStyle='rgba(0,0,0,.72)';cx.fillRect(12,H*.35,W-24,112);
     cx.textAlign='center';
     cx.shadowBlur=18;cx.shadowColor='#ff0';cx.fillStyle='#ffee00';cx.font='bold 30px Courier New';
     cx.fillText(`WAVE  ${waveIdx}  CLEAR!`,W/2,H*.35+46);
