@@ -52,5 +52,24 @@
 <script src="js/collisions.js"></script>
 <script src="js/hud.js"></script>
 <script src="js/game.js"></script>
+<script>
+!function(){
+  var wrap=document.getElementById('wrap');
+  var naturalH=wrap.offsetHeight||726;
+  function fit(){
+    var scale=Math.min(1,window.innerHeight*0.9/naturalH);
+    if(scale<1){
+      wrap.style.transform='scale('+scale.toFixed(4)+')';
+      wrap.style.transformOrigin='top center';
+      document.body.style.justifyContent='flex-start';
+    }else{
+      wrap.style.transform='';
+      document.body.style.justifyContent='center';
+    }
+  }
+  window.addEventListener('resize',fit);
+  fit();
+}();
+</script>
 </body>
 </html>

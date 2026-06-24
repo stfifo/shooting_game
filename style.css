@@ -1,5 +1,5 @@
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Courier New',monospace}
+body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;overflow:hidden;font-family:'Courier New',monospace}
 #wrap{width:480px}
 #topBar{display:flex;justify-content:space-between;padding:5px 10px;font-size:13px;letter-spacing:1px;color:#cc9900;background:#0a0800;border:1px solid #332200;border-bottom:none}
 canvas{display:block;image-rendering:pixelated;border:2px solid #332200}
