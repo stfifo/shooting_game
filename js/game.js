@@ -1,7 +1,7 @@
 // ── Game loop ─────────────────────────────────────────────────────
 function startGame(){
   score=0;lives=3;wave=0;combo=0;comboT=0;bombs=2;skillKills=0;fireballT=0;ghostT=0;
-  rapidT=0;pierceT=0;shieldT=0;
+  rapidT=0;pierceT=0;shieldT=0;fDropGroup=0;fDropCount=0;
   pBullets=[];eBullets=[];pups=[];parts=[];fxts=[];waveSquads=[];
   boss=null;bossWave=false;bossWarnActive=false;betweenWave=false;betweenT=0;
   P=makePlayer();initBackground();launchWave(1);STATE='PLAYING';updateHUD();

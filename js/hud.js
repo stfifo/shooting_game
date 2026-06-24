@@ -40,7 +40,7 @@ function drawHUDCanvas(){
     const a=.5+.4*Math.sin(performance.now()*.006);cx.globalAlpha=a;cx.fillStyle='#ff0';
     cx.font='bold 11px Courier New';cx.textAlign='right';cx.fillText('SKILL READY [X]',W-14,H-28);cx.globalAlpha=1;cx.textAlign='left';
   }
-  if(ghostT>0&&ghostT<4){cx.globalAlpha=Math.min(1,ghostT);cx.fillStyle='#8df';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`WING ${Math.ceil(ghostT)}s`,W-14,H-46);cx.globalAlpha=1;cx.textAlign='left';}
+  if(ghostT>0&&ghostT<4){cx.globalAlpha=Math.min(1,ghostT);cx.fillStyle='#8df';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`◎ WING ${Math.ceil(ghostT)}s`,W-14,H-46);cx.globalAlpha=1;cx.textAlign='left';}
   if(fireballT>0){cx.globalAlpha=.8+.18*Math.sin(performance.now()*.01);cx.fillStyle='#f60';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`FIREBALL ${Math.ceil(fireballT)}s`,W-14,H-64);cx.globalAlpha=1;cx.textAlign='left';}
   if(combo>2&&comboT>0){cx.globalAlpha=Math.min(1,comboT);cx.fillStyle='#f80';cx.font='bold 13px Courier New';cx.textAlign='right';cx.fillText(`${combo}x COMBO`,W-14,H-10);cx.globalAlpha=1;cx.textAlign='left';}
   updatePowerupPanel();
