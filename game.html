@@ -7,31 +7,64 @@
 </head>
 <body>
 <div id="wrap">
-  <div id="topBar">
-    <span>SCORE <span id="scoreEl">00000000</span></span>
-    <span>WAVE <span id="waveEl">-</span></span>
-    <span>HI <span id="hiEl">00000000</span></span>
-  </div>
-  <canvas id="canvas" width="480" height="600"></canvas>
-  <div id="botBar">
-    <div class="hg"><span class="hl">LIFE</span><div id="livesEl"></div></div>
-    <div class="hg"><span class="hl">BOMB[Z]</span><div id="bombsEl"></div></div>
-    <div class="hg"><span class="hl">SKILL[X]</span><div id="skillWrap"><div id="skillFill"></div></div></div>
-    <div class="hg"><span class="hl">WPN</span><div id="wpName">SINGLE</div></div>
-    <div class="hg"><span class="hl">WING</span><div id="ghostEl">-</div></div>
-  </div>
-  <div id="keyBar">
-    <div id="dpad">
-      <span class="key" id="ku">↑</span>
-      <span class="key" id="kl">←</span>
-      <span class="key" id="kd">↓</span>
-      <span class="key" id="kr">→</span>
+  <div id="gameCol">
+    <div id="topBar">
+      <span>SCORE <span id="scoreEl">00000000</span></span>
+      <span>WAVE <span id="waveEl">-</span></span>
+      <span>HI <span id="hiEl">00000000</span></span>
     </div>
-    <div id="actkeys">
-      <span class="key" id="k-z">Z<br><small>BOMB</small></span>
-      <span class="key" id="k-x">X<br><small>SKILL</small></span>
-      <span class="key wide" id="k-space">SPC<br><small>PAUSE</small></span>
-      <span class="key wide" id="k-start">ENTER<br><small>START</small></span>
+    <canvas id="canvas" width="480" height="600"></canvas>
+    <div id="botBar">
+      <div class="hg"><span class="hl">LIFE</span><div id="livesEl"></div></div>
+      <div class="hg"><span class="hl">BOMB[Z]</span><div id="bombsEl"></div></div>
+      <div class="hg"><span class="hl">SKILL[X]</span><div id="skillWrap"><div id="skillFill"></div></div></div>
+      <div class="hg"><span class="hl">WPN</span><div id="wpName">SINGLE</div></div>
+      <div class="hg"><span class="hl">WING</span><div id="ghostEl">-</div></div>
+    </div>
+    <div id="keyBar">
+      <div id="dpad">
+        <span class="key" id="ku">↑</span>
+        <span class="key" id="kl">←</span>
+        <span class="key" id="kd">↓</span>
+        <span class="key" id="kr">→</span>
+      </div>
+      <div id="actkeys">
+        <span class="key" id="k-z">Z<br><small>BOMB</small></span>
+        <span class="key" id="k-x">X<br><small>SKILL</small></span>
+        <span class="key wide" id="k-space">SPC<br><small>PAUSE</small></span>
+        <span class="key wide" id="k-start">ENTER<br><small>START</small></span>
+      </div>
+    </div>
+  </div>
+  <div id="powerupPanel">
+    <div class="pu-slot active" id="pu-life">
+      <div class="pu-head"><span class="pu-icon">♥</span><span class="pu-name">LIFE</span><span class="pu-time" id="put-life"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-life"></div></div>
+    </div>
+    <div class="pu-slot active" id="pu-bomb">
+      <div class="pu-head"><span class="pu-icon">◉</span><span class="pu-name">BOMB</span><span class="pu-time" id="put-bomb"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-bomb"></div></div>
+    </div>
+    <div class="pu-divider"></div>
+    <div class="pu-slot" id="pu-power">
+      <div class="pu-head"><span class="pu-icon">▲</span><span class="pu-name">POWER</span><span class="pu-time" id="put-power"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-power"></div></div>
+    </div>
+    <div class="pu-slot" id="pu-wing">
+      <div class="pu-head"><span class="pu-icon">✈</span><span class="pu-name">WING</span><span class="pu-time" id="put-wing"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-wing"></div></div>
+    </div>
+    <div class="pu-slot" id="pu-rapid">
+      <div class="pu-head"><span class="pu-icon">⚡</span><span class="pu-name">RAPID</span><span class="pu-time" id="put-rapid"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-rapid"></div></div>
+    </div>
+    <div class="pu-slot" id="pu-pierce">
+      <div class="pu-head"><span class="pu-icon">▶</span><span class="pu-name">PIERCE</span><span class="pu-time" id="put-pierce"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-pierce"></div></div>
+    </div>
+    <div class="pu-slot" id="pu-shield">
+      <div class="pu-head"><span class="pu-icon">◈</span><span class="pu-name">SHIELD</span><span class="pu-time" id="put-shield"></span></div>
+      <div class="pu-track"><div class="pu-fill" id="puf-shield"></div></div>
     </div>
   </div>
 </div>

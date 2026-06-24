@@ -1,6 +1,40 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;overflow:hidden;padding-top:20px;font-family:'Courier New',monospace}
-#wrap{width:480px}
+#wrap{display:flex;flex-direction:row;align-items:flex-start;width:auto}
+#gameCol{width:480px}
+#powerupPanel{width:84px;margin-left:4px;padding:8px;background:#0a0800;border:1px solid #332200;display:flex;flex-direction:column;gap:12px;align-self:stretch}
+.pu-slot{display:none;flex-direction:column;gap:4px}
+.pu-slot.active{display:flex}
+.pu-head{display:flex;align-items:center;gap:3px}
+.pu-icon{font-size:11px;min-width:13px}
+.pu-name{flex:1;color:#444;font-size:7px;letter-spacing:.8px;font-family:'Courier New',monospace}
+.pu-time{font-size:9px;font-weight:bold;font-family:'Courier New',monospace;min-width:18px;text-align:right}
+.pu-track{width:100%;height:7px;background:#111;border-radius:2px;overflow:hidden;border:1px solid #222}
+.pu-fill{height:100%;width:100%;border-radius:1px}
+@keyframes pu-blink{0%,100%{opacity:1}50%{opacity:.15}}
+.pu-slot.expiring{animation:pu-blink .44s step-end infinite}
+.pu-divider{height:1px;background:#1e1400;margin:2px 0}
+#pu-life .pu-icon,#pu-life .pu-time{color:#ff8888}
+#pu-life .pu-fill{background:#ff8888}
+#pu-life .pu-track{border-color:#ff888833}
+#pu-bomb .pu-icon,#pu-bomb .pu-time{color:#ff8800}
+#pu-bomb .pu-fill{background:#ff8800}
+#pu-bomb .pu-track{border-color:#ff880033}
+#pu-power .pu-icon,#pu-power .pu-time{color:#ffee00}
+#pu-power .pu-fill{background:#ffee00}
+#pu-power .pu-track{border-color:#ffee0033}
+#pu-wing .pu-icon,#pu-wing .pu-time{color:#88ddff}
+#pu-wing .pu-fill{background:#88ddff}
+#pu-wing .pu-track{border-color:#88ddff33}
+#pu-shield .pu-icon,#pu-shield .pu-time{color:#00ff88}
+#pu-shield .pu-fill{background:#00ff88}
+#pu-shield .pu-track{border-color:#00ff8833}
+#pu-rapid .pu-icon,#pu-rapid .pu-time{color:#00ffff}
+#pu-rapid .pu-fill{background:#00ffff}
+#pu-rapid .pu-track{border-color:#00ffff33}
+#pu-pierce .pu-icon,#pu-pierce .pu-time{color:#cc00ff}
+#pu-pierce .pu-fill{background:#cc00ff}
+#pu-pierce .pu-track{border-color:#cc00ff33}
 #topBar{display:flex;justify-content:space-between;padding:5px 10px;font-size:13px;letter-spacing:1px;color:#cc9900;background:#0a0800;border:1px solid #332200;border-bottom:none}
 canvas{display:block;image-rendering:pixelated;border:2px solid #332200}
 #botBar{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#0a0800;border:1px solid #332200;border-top:none;gap:6px;flex-wrap:wrap}

@@ -14,7 +14,7 @@ function updateItems(dt){
 }
 function applyItem(t){
   switch(t){
-    case'P':if(P.weapon<4)P.weapon++;P.wpTimer=14;addFx('POWER UP!',P.x,P.y-20,'#ff0',15);break;
+    case'P':if(P.weapon<4)P.weapon++;P.wpTimer=POWER_DUR;addFx('POWER UP!',P.x,P.y-20,'#ff0',15);break;
     case'B':bombs=Math.min(BOMB_MAX,bombs+1);addFx(`BOMB! (${bombs})`,P.x,P.y-20,'#f80',14);break;
     case'L':lives++;addFx('LIFE UP! ♥',P.x,P.y-20,'#f88',15);break;
     case'F':ghostT=GHOST_DUR;addFx('WING FORMATION!',P.x,P.y-24,'#8df',14);break;
