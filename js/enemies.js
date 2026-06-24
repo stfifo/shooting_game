@@ -20,53 +20,46 @@ function drawEC(x,y,fr){
   pxDraw(SPR_C,PAL_C,x,y);
 }
 
+// ── Boss PNG sprites (tier 1-6) ───────────────────────────────────
+const BOSS_IMGS=Array.from({length:6},(_,i)=>{
+  const img=new Image();img.src=`asset/boss_${i+1}.png`;return img;
+});
+
 // ── Boss Sprite ──────────────────────────────────────────────────
 function drawBossSprite(b){
   if(!b||!b.alive)return;
   const ph=b.phase;
-  // Phase-color palettes
-  const bpal=[
-    ['','#5522aa','#3a1880','#6633bb','#ff88ff','#9955ff','#441166','#222','#cc44ff','#ff3300'],
-    ['','#8a4400','#5a2800','#aa5500','#ffcc88','#ff8800','#441100','#222','#ffaa00','#ff5500'],
-    ['','#aa0808','#6a0404','#cc1010','#ff9999','#ff4444','#550000','#222','#ff2200','#ff0000'],
-  ][ph-1]||[];
+  const img=BOSS_IMGS[(b.tier||1)-1];
 
-  const S=PX+1; // boss uses slightly larger pixel
+  if(img&&img.complete&&img.naturalWidth>0){
+    // 140×130 박스 안에 비율 유지하며 렌더
+    const maxW=140,maxH=130;
+    const scale=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
+    const dw=img.naturalWidth*scale,dh=img.naturalHeight*scale;
+    const dx=b.x-dw/2,dy=b.y-dh/2;
 
-  // Boss body – pixel grid 20×16
-  const BOSS_BODY=[
-    [0,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,4,4,1,1,4,4,1,4,0,0,0,0,0,0,0],
-    [0,0,0,0,4,4,1,1,1,1,1,1,4,4,0,0,0,0,0,0],
-    [0,0,0,6,6,1,1,2,2,2,1,1,6,6,0,0,0,0,0,0],
-    [0,0,6,6,6,1,2,2,3,2,2,1,6,6,6,0,0,0,0,0],
-    [0,6,6,6,6,1,2,3,3,3,2,1,6,6,6,6,0,0,0,0],
-    [6,6,7,6,6,1,1,2,2,2,1,1,6,6,7,6,6,0,0,0],
-    [6,6,7,6,6,1,1,1,1,1,1,1,6,6,7,6,6,0,0,0],
-    [0,6,6,6,6,1,1,1,1,1,1,1,6,6,6,6,0,0,0,0],
-    [0,0,6,6,6,1,1,1,1,1,1,1,6,6,6,0,0,0,0,0],
-    [0,0,0,6,6,1,1,1,1,1,1,1,6,6,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,8,0,0,0,8,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,9,0,0,0,9,0,0,0,0,0,0,0,0,0],
-  ];
-  pxDraw(BOSS_BODY,bpal,b.x,b.y);
+    cx.save();
+    // Phase별 외곽 글로우
+    if(ph===3){cx.shadowBlur=24;cx.shadowColor='#ff2200';}
+    else if(ph===2){cx.shadowBlur=16;cx.shadowColor='#ff7700';}
+    else{cx.shadowBlur=8;cx.shadowColor='#8844ff';}
+    cx.drawImage(img,dx,dy,dw,dh);
+    cx.restore();
 
-  // Phase 2+: gun turrets
-  if(ph>=2){
-    cx.fillStyle=bpal[7];
-    [[-30,6],[30,6]].forEach(([tx,ty])=>cx.fillRect(Math.round(b.x+tx*S/S),Math.round(b.y+ty*S/S),S*3,S));
-  }
-
-  // Phase 3: fire damage pixels
-  if(ph===3){
-    const fp=[[6,12],[-8,16],[3,6],[-5,20],[10,8]];
-    fp.forEach(([fx,fy])=>{
-      cx.fillStyle=`rgba(255,${rnd(40,160)|0},0,${rnd(.5,.95)})`;
-      cx.fillRect(Math.round(b.x+fx),Math.round(b.y+fy),S*2,S*2);
-    });
+    // Phase 2: 주황 틴트
+    if(ph===2){cx.globalAlpha=.18;cx.fillStyle='#ff8800';cx.fillRect(dx,dy,dw,dh);cx.globalAlpha=1;}
+    // Phase 3: 붉은 틴트 + 화염 스파크
+    if(ph===3){
+      cx.globalAlpha=.28;cx.fillStyle='#ff2200';cx.fillRect(dx,dy,dw,dh);cx.globalAlpha=1;
+      [[6,12],[-8,16],[3,6],[-5,20],[10,8]].forEach(([fx,fy])=>{
+        cx.fillStyle=`rgba(255,${rnd(40,160)|0},0,${rnd(.5,.95)})`;
+        cx.fillRect(Math.round(b.x+fx),Math.round(b.y+fy),6,6);
+      });
+    }
+  }else{
+    // 로딩 중 폴백
+    cx.fillStyle=ph===3?'#aa0808':ph===2?'#8a4400':'#5522aa';
+    cx.fillRect(b.x-45,b.y-30,90,60);
   }
 
   // Boss HP bar
@@ -76,12 +69,12 @@ function drawBossSprite(b){
   const bars=Math.floor(bw/4);
   for(let i=0;i<bars;i++){
     if(i/bars>pct)break;
-    const hue=i/bars>.66?'#4f4':i/bars>.33?'#ff4':'#f44';
-    cx.fillStyle=hue;cx.fillRect(bx+i*4,by,3,bh);
+    cx.fillStyle=i/bars>.66?'#4f4':i/bars>.33?'#ff4':'#f44';
+    cx.fillRect(bx+i*4,by,3,bh);
   }
   cx.strokeStyle='#444';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
   [1/3,2/3].forEach(m=>{cx.strokeStyle='#666';cx.beginPath();cx.moveTo(bx+bw*m,by);cx.lineTo(bx+bw*m,by+bh);cx.stroke();});
-  cx.fillStyle='#fff6';cx.font='8px Courier New';cx.fillText(`BOSS  HP`,bx+4,by+bh-1);
+  cx.fillStyle='#fff6';cx.font='8px Courier New';cx.fillText('BOSS  HP',bx+4,by+bh-1);
   if(ph>1){cx.fillStyle='#ff4';cx.fillText(`PHASE ${ph}`,bx+bw-52,by+bh-1);}
 }
 
