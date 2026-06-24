@@ -15,7 +15,8 @@ function spawnBossNow(n){
   const shootMul=1.8-tier*0.2;            // tier1→1.6배 느림, tier4→원본
   boss={x:W/2,y:-100,w:90,h:60,hp,maxHp:hp,phase:1,moveDir:1,sineT:0,
         shootT:1.5,summonT:9,specialT:rnd(4,6),dodgeT:rnd(1,2),
-        alive:true,frame:0,entering:true,pathT:0,tier,speedMul,shootMul};
+        alive:true,frame:0,entering:true,pathT:0,tier,speedMul,shootMul,
+        chaosAction:'sweep',chaosT:rnd(2,4),chaosDt:0};
   bossWave=true;
 }
 function updateBossWarn(dt){
@@ -34,14 +35,53 @@ function updateBoss(dt){
   const newPh=pct>.66?1:pct>.33?2:3;
   if(newPh>boss.phase){boss.phase=newPh;flashIt(newPh===3?'rgba(255,0,0,.3)':'rgba(255,120,0,.25)');doShake(6,.3);addFx(`PHASE ${boss.phase}!`,W/2,H*.35,'#f80',18);bossSpecial();boss.specialT=rnd(3,5);}
   boss.sineT+=dt;const spd=[0,72,115,162][boss.phase]*boss.speedMul;
-  if(boss.phase===2){boss.dodgeT-=dt;if(boss.dodgeT<=0){boss.moveDir*=-1;boss.dodgeT=rnd(.8,1.8);}}
-  boss.x+=boss.moveDir*spd*dt;
-  if(boss.phase===3)boss.y=105+Math.sin(boss.sineT*1.6)*52;
-  else if(boss.phase===2)boss.y=105+Math.sin(boss.sineT*.75)*26;
-  if(boss.x<52||boss.x>W-52)boss.moveDir*=-1;boss.x=clamp(boss.x,52,W-52);
+  if(boss.tier>=5){
+    updateBossChaos(dt,spd);
+  }else{
+    if(boss.phase===2){boss.dodgeT-=dt;if(boss.dodgeT<=0){boss.moveDir*=-1;boss.dodgeT=rnd(.8,1.8);}}
+    boss.x+=boss.moveDir*spd*dt;
+    if(boss.phase===3)boss.y=105+Math.sin(boss.sineT*1.6)*52;
+    else if(boss.phase===2)boss.y=105+Math.sin(boss.sineT*.75)*26;
+    if(boss.x<52||boss.x>W-52)boss.moveDir*=-1;boss.x=clamp(boss.x,52,W-52);
+  }
   boss.shootT-=dt;if(boss.shootT<=0){bossShoot();boss.shootT=[0,1.35,.95,.65][boss.phase]*boss.shootMul;}
   boss.specialT-=dt;if(boss.specialT<=0){bossSpecial();boss.specialT=[0,7,5.5,4][boss.phase]*boss.shootMul*.65;}
   if(boss.phase>=2){boss.summonT-=dt;if(boss.summonT<=0){boss.summonT=boss.phase===3?5:8;bossSpawnMinions();}}
+}
+// tier 5/6 혼돈 이동: 매 1.5~3.2초마다 행동 패턴을 랜덤 전환
+function updateBossChaos(dt,spd){
+  boss.chaosT-=dt;boss.chaosDt+=dt;
+  if(boss.chaosT<=0){
+    boss.chaosAction=pick(['track','vdrop','rush','teleport','circle','sweep']);
+    boss.chaosT=rnd(1.5,3.2);boss.chaosDt=0;
+    if(boss.chaosAction==='teleport'){
+      boss.x=rnd(80,W-80);boss.y=rnd(70,H*.38);
+      flashIt('rgba(160,0,255,.42)');doShake(5,.3);
+      addFx('!!',boss.x,boss.y-28,'#f0f',16);
+    }
+  }
+  const cspd=spd*1.65;
+  switch(boss.chaosAction){
+    case 'track': // 플레이어 추격
+      if(P){const dx=P.x-boss.x,dy=P.y-boss.y,l=Math.hypot(dx,dy)||1;
+        boss.x+=dx/l*cspd*dt;boss.y+=dy/l*cspd*.6*dt;}break;
+    case 'vdrop': // 수직 낙하 후 복귀
+      if(boss.chaosDt<0.35)boss.y+=540*dt;
+      else if(boss.chaosDt<0.72)boss.y-=540*dt;
+      else boss.y+=(105-boss.y)*dt*5;break;
+    case 'rush': // 플레이어 방향 돌진
+      if(boss.chaosDt<0.45&&P){const dx=P.x-boss.x,dy=P.y-boss.y,l=Math.hypot(dx,dy)||1;
+        boss.x+=dx/l*460*dt;boss.y+=dy/l*390*dt;}
+      else boss.y+=(105-boss.y)*dt*4;break;
+    case 'circle': // 원 궤도
+      boss.x=W/2+Math.cos(boss.sineT*1.5)*(W*.34);
+      boss.y=H*.2+Math.sin(boss.sineT*1.5)*58;break;
+    case 'teleport': break; // 순간이동은 전환 시점에 이미 처리
+    default: // sweep — 빠른 수평 이동
+      boss.x+=boss.moveDir*cspd*dt;
+      if(boss.x<52||boss.x>W-52)boss.moveDir*=-1;break;
+  }
+  boss.x=clamp(boss.x,52,W-52);boss.y=clamp(boss.y,60,H*.58);
 }
 function bossShoot(){
   const sp=188;const mk=(vx,vy)=>({x:boss.x,y:boss.y+30,vx,vy,w:7,h:14,alive:true,t:'B'});

@@ -62,16 +62,19 @@ function drawProgressBar(){
   const fillH=Math.round(BH*progress);
   if(fillH>0){
     const gr=cx.createLinearGradient(0,BY+BH,0,BY);
-    gr.addColorStop(0,'#1a6fc8');   // 지구 파랑
-    gr.addColorStop(.28,'#0a1a3a'); // 대기권 남색
-    gr.addColorStop(.55,'#300c0c'); // 화성 적갈
-    gr.addColorStop(1,'#1a0030');   // 심우주 보라
+    gr.addColorStop(0,'#1a6fc8');   // 지구
+    gr.addColorStop(.14,'#0a1a3a'); // 대기권
+    gr.addColorStop(.28,'#300c0c'); // 화성
+    gr.addColorStop(.42,'#083040'); // 천왕성/해왕성
+    gr.addColorStop(.57,'#07081a'); // 명왕성/카이퍼
+    gr.addColorStop(.72,'#030010'); // 은하
+    gr.addColorStop(1,'#020d04');   // 외계 행성
     cx.fillStyle=gr;
     cx.fillRect(BX,BY+BH-fillH,BW,fillH);
   }
 
-  // 보스 웨이브 구분 마커 (5,10,15,20)
-  [5,10,15,20].forEach(bw=>{
+  // 보스 웨이브 구분 마커 (5,10,15,20,25,30)
+  [5,10,15,20,25,30].forEach(bw=>{
     const ratio=(bw-1)/(TOTAL_WAVES-1);
     const my=BY+BH-Math.round(BH*ratio);
     const reached=waveIdx>=bw;
@@ -215,7 +218,7 @@ function drawPaused(){
   cx.shadowBlur=blink?8:0;cx.shadowColor='#4af';
   cx.fillStyle=blink?'#88ddff':'#223344';
   cx.font='bold 13px Courier New';cx.textAlign='center';
-  cx.fillText('[ P ]  RESUME',W/2,H/2+76);
+  cx.fillText('[ SPACE ]  RESUME',W/2,H/2+76);
   cx.shadowBlur=0;cx.textAlign='left';
 }
 function drawGameOver(){
@@ -253,7 +256,7 @@ function drawGameClear(){
   cx.shadowBlur=0;
   // 서브타이틀
   cx.fillStyle='#88ffcc';cx.font='bold 14px Courier New';
-  cx.fillText('ALL  20  WAVES  COMPLETED',W/2,H/2-56);
+  cx.fillText('ALL  30  WAVES  COMPLETED',W/2,H/2-56);
   // 점수 카드
   cx.fillStyle='rgba(255,255,100,.06)';cx.fillRect(W/2-110,H/2-40,220,96);
   cx.strokeStyle='#443300';cx.lineWidth=1;cx.strokeRect(W/2-110,H/2-40,220,96);

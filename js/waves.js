@@ -1,7 +1,7 @@
 // ── Wave definitions ──────────────────────────────────────────────
 // 웨이브별 랜덤 편대 생성: 티어(1-4)에 따라 편대 수·적 종류·대형·진입 경로를 무작위 선택
 function randWave(n){
-  const tier=Math.min(4,Math.ceil(n/5));
+  const tier=Math.min(6,Math.ceil(n/5));
   const fmtKeys=Object.keys(FMTS).filter(k=>k!=='SOLO');
   const entryKeys=Object.keys(ENTRY);
   // 티어별 적 종류 풀 (앞쪽일수록 많이 나옴)
@@ -10,6 +10,8 @@ function randWave(n){
     ['A','A','B','B','C'],        // tier2: B/C 등장
     ['A','B','B','C','C'],        // tier3: B/C 비율 증가
     ['B','B','C','C','C'],        // tier4: B/C 위주
+    ['B','C','C','C','C'],        // tier5: C 위주
+    ['C','C','C','C','C'],        // tier6: C만
   ];
 
   // wave 1: 튜토리얼 난이도 — A형 소형 편대 1개, 단순 TOP 진입
@@ -21,10 +23,10 @@ function randWave(n){
   }
 
   // 티어별 편대 수 범위 [min, max]
-  const countRange=[[1,2],[1,3],[2,3],[2,4]][tier-1];
+  const countRange=[[1,2],[1,3],[2,3],[2,4],[3,4],[3,5]][tier-1];
   const count=countRange[0]+Math.floor(Math.random()*(countRange[1]-countRange[0]+1));
   // 편대 간 출현 간격: tier1은 여유 있게, 이후 티어는 점점 빠르게
-  const gapRange=tier===1?[3.0,5.5]:[2.5,4.5];
+  const gapRange=tier<=2?[3.0,5.5]:tier<=4?[2.5,4.5]:[2.0,3.8];
   const squads=[];let delay=0;
   for(let i=0;i<count;i++){
     const type=pick(typePools[tier-1]);
@@ -46,6 +48,8 @@ function launchWave(n){
     startBossWarning(n); // warning plays, boss spawns after 3.5s
     if(n>=10)waveSquads.push(makeSquad('A','LINE5',W/2,85,.5,'TOP'));
     if(n>=15)waveSquads.push(makeSquad('B','TWIN2',W/2,185,2,'TOP'));
+    if(n>=25)waveSquads.push(makeSquad('C','ARROW7',W/2,130,1,'TOP'));
+    if(n>=30)waveSquads.push(makeSquad('C','LINE7',W/2,200,3,'TOP'));
   }else{
     const defs=randWave(n);
     waveSquads=defs.map(d=>makeSquad(d[0],d[1],d[2],d[3],d[4]||0,d[5]||'TOP'));
