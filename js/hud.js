@@ -129,7 +129,7 @@ function drawIdle(){
   cx.fillStyle='rgba(255,255,255,.035)';cx.fillRect(bx,by,bw,bh);
   cx.strokeStyle='#2a2a2a';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
   cx.fillStyle='#3a3a3a';cx.font='9px Courier New';cx.fillText('— CONTROLS —',W/2,by+14);
-  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['FIRE','AUTO'],['BOMB','Z'],['SKILL','X  (20 kills → charged)'],['PAUSE','P']];
+  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['FIRE','AUTO'],['BOMB','Z'],['SKILL','X  (20 kills → charged)'],['PAUSE','SPACE']];
   ctrl.forEach(([k,v],i)=>{
     const y=by+28+i*17;
     cx.fillStyle='#444';cx.textAlign='right';cx.font='9px Courier New';cx.fillText(k,W/2-8,y);
@@ -181,7 +181,7 @@ function drawPaused(){
   cx.strokeStyle='#222';cx.lineWidth=1;cx.strokeRect(bx,cy,232,bh);
   cx.fillStyle='#334';cx.font='9px Courier New';cx.textAlign='center';
   cx.fillText('— CONTROLS —',W/2,cy+14);
-  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['BOMB','Z'],['SKILL','X  (20킬 충전 후)'],['PAUSE','P']];
+  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['BOMB','Z'],['SKILL','X  (20킬 충전 후)'],['PAUSE','SPACE']];
   ctrl.forEach(([k,v],i)=>{
     const y=cy+30+i*20;
     cx.fillStyle='#3a4a5a';cx.textAlign='right';cx.font='9px Courier New';cx.fillText(k,W/2-10,y);
