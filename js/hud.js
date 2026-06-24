@@ -145,6 +145,28 @@ function drawIdle(){
   // Hi-score
   cx.fillStyle='#3a3a3a';cx.font='11px Courier New';
   cx.fillText(`HI-SCORE  ${String(hiScore).padStart(8,'0')}`,W/2,H/2+130);
+
+  // ── HUD 안내 ──
+  const hx=W/2-148,hy=H/2+152,hw=296,hh=86;
+  cx.fillStyle='rgba(255,255,255,.025)';cx.fillRect(hx,hy,hw,hh);
+  cx.strokeStyle='#222';cx.lineWidth=1;cx.strokeRect(hx,hy,hw,hh);
+  cx.fillStyle='#2a2a2a';cx.font='9px Courier New';cx.textAlign='center';
+  cx.fillText('— STATUS BAR GUIDE —',W/2,hy+13);
+  const guide=[
+    ['✈','LIFE','피격 1회마다 감소. 0이면 게임 오버'],
+    ['◉','BOMB','Z로 발동. 전체 적 즉시 제거'],
+    ['▬▬','SKILL','20킬 충전 후 X로 파이어볼 발동'],
+    ['P·R·N·S','ITEM','파워업 아이템 — 무기/속사/관통/쉴드'],
+  ];
+  guide.forEach(([icon,label,desc],i)=>{
+    const gy=hy+26+i*15;
+    cx.fillStyle='#ffcc44';cx.textAlign='left';cx.font='bold 9px Courier New';
+    cx.fillText(icon,hx+8,gy);
+    cx.fillStyle='#555';cx.font='9px Courier New';
+    cx.fillText(label,hx+46,gy);
+    cx.fillStyle='#888';
+    cx.fillText(desc,hx+90,gy);
+  });
   cx.textAlign='left';
 }
 function drawPaused(){
