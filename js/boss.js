@@ -1,4 +1,49 @@
 // ── Boss ──────────────────────────────────────────────────────────
+
+// ── Boss PNG sprites (tier 1-6) ───────────────────────────────────
+const BOSS_IMGS=Array.from({length:6},(_,i)=>{
+  const img=new Image();img.src=`asset/boss_${i+1}.png`;return img;
+});
+function drawBossSprite(b){
+  if(!b||!b.alive)return;
+  const ph=b.phase;
+  const img=BOSS_IMGS[(b.tier||1)-1];
+  if(img&&img.complete&&img.naturalWidth>0){
+    const maxW=140,maxH=130;
+    const scale=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
+    const dw=img.naturalWidth*scale,dh=img.naturalHeight*scale;
+    const dx=b.x-dw/2,dy=b.y-dh/2;
+    cx.save();
+    if(ph===3){cx.shadowBlur=24;cx.shadowColor='#ff2200';}
+    else if(ph===2){cx.shadowBlur=16;cx.shadowColor='#ff7700';}
+    else{cx.shadowBlur=8;cx.shadowColor='#8844ff';}
+    cx.drawImage(img,dx,dy,dw,dh);cx.restore();
+    if(ph===2){cx.globalAlpha=.18;cx.fillStyle='#ff8800';cx.fillRect(dx,dy,dw,dh);cx.globalAlpha=1;}
+    if(ph===3){
+      cx.globalAlpha=.28;cx.fillStyle='#ff2200';cx.fillRect(dx,dy,dw,dh);cx.globalAlpha=1;
+      [[6,12],[-8,16],[3,6],[-5,20],[10,8]].forEach(([fx,fy])=>{
+        cx.fillStyle=`rgba(255,${rnd(40,160)|0},0,${rnd(.5,.95)})`;
+        cx.fillRect(Math.round(b.x+fx),Math.round(b.y+fy),6,6);
+      });
+    }
+  }else{
+    cx.fillStyle=ph===3?'#aa0808':ph===2?'#8a4400':'#5522aa';
+    cx.fillRect(b.x-45,b.y-30,90,60);
+  }
+  const bx=8,by=8,bw=W-16,bh=10;
+  cx.fillStyle='#111';cx.fillRect(bx,by,bw,bh);
+  const pct=b.hp/b.maxHp,bars=Math.floor(bw/4);
+  for(let i=0;i<bars;i++){
+    if(i/bars>pct)break;
+    cx.fillStyle=i/bars>.66?'#4f4':i/bars>.33?'#ff4':'#f44';
+    cx.fillRect(bx+i*4,by,3,bh);
+  }
+  cx.strokeStyle='#444';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
+  [1/3,2/3].forEach(m=>{cx.strokeStyle='#666';cx.beginPath();cx.moveTo(bx+bw*m,by);cx.lineTo(bx+bw*m,by+bh);cx.stroke();});
+  cx.fillStyle='#fff6';cx.font='8px Courier New';cx.fillText('BOSS  HP',bx+4,by+bh-1);
+  if(ph>1){cx.fillStyle='#ff4';cx.fillText(`PHASE ${ph}`,bx+bw-52,by+bh-1);}
+}
+
 let boss=null, bossWave=false;
 let bossWarnT=0, bossWarnActive=false; // warning cutscene
 function isBossWave(n){return n%5===0;}
@@ -138,63 +183,3 @@ function killBoss(){
   }else{betweenWave=true;betweenT=1.5;}
 }
 
-// ── Boss Warning Cutscene ─────────────────────────────────────────
-function drawBossWarning(){
-  if(!bossWarnActive)return;
-  const now=performance.now();
-  // 초당 4회 교번 플래시 (빠를수록 긴장감 상승)
-  const flash=Math.floor(bossWarnT*4)%2===0;
-
-  // ① 전체 화면 빨간 오버레이 — 플래시/비플래시 교번
-  cx.fillStyle=`rgba(160,0,0,${flash?.58:.10})`;
-  cx.fillRect(0,0,W,H);
-
-  // ② CRT 스캔라인 — 레트로 느낌
-  cx.fillStyle='rgba(0,0,0,.20)';
-  for(let y=0;y<H;y+=3)cx.fillRect(0,y,W,1);
-
-  // ③ 픽셀 아트 코너 브래킷 (4개 모서리, 각 6칸×4px)
-  const S=4, M=14, L=6;
-  cx.fillStyle=flash?'#ff2222':'#880000';
-  [[M,M,1,1],[W-M,M,-1,1],[M,H-M,1,-1],[W-M,H-M,-1,-1]].forEach(([ox,oy,sx,sy])=>{
-    for(let i=0;i<L;i++)cx.fillRect(ox+sx*i*S,oy,S,S);         // 수평
-    for(let i=1;i<L;i++)cx.fillRect(ox,oy+sy*i*S,S,S);         // 수직
-  });
-
-  // ④ 중앙 구분선 (점선 픽셀)
-  cx.fillStyle=flash?'#cc0000':'#440000';
-  for(let x=0;x<W;x+=8){cx.fillRect(x,H/2-34,5,2);cx.fillRect(x,H/2+20,5,2);}
-
-  cx.textAlign='center';
-  const pulse=.88+.12*Math.sin(now*.014);
-  cx.globalAlpha=pulse;
-
-  // ⑤ WARNING 텍스트 — 외곽 글로우 2겹 후 본체
-  cx.shadowColor='#ff0000';
-  cx.shadowBlur=48;
-  cx.fillStyle='rgba(255,0,0,.4)';
-  cx.font='bold 50px Courier New';
-  cx.fillText('⚠  WARNING  ⚠',W/2,H/2-48); // 글로우 레이어
-  cx.shadowBlur=22;
-  cx.fillStyle=flash?'#ffffff':'#ff3333';
-  cx.fillText('⚠  WARNING  ⚠',W/2,H/2-48); // 본체
-
-  // ⑥ 서브타이틀
-  cx.shadowBlur=10;cx.shadowColor='#ff0000';
-  cx.fillStyle=flash?'#ffcccc':'#aa4444';
-  cx.font='bold 15px Courier New';
-  cx.fillText('BOSS  IS  APPROACHING',W/2,H/2+4);
-
-  // ⑦ 카운트다운 — 박동(scale) 애니메이션
-  const cnt=Math.ceil(bossWarnT);
-  const beat=1+.12*Math.max(0,Math.sin(now*.018)); // 심장박동
-  cx.save();
-  cx.translate(W/2,H/2+64);cx.scale(beat,beat);
-  cx.shadowBlur=44;cx.shadowColor='#ff0000';
-  cx.fillStyle=flash?'#ffffff':'#ff5555';
-  cx.font='bold 62px Courier New';
-  cx.fillText(cnt,0,0);
-  cx.restore();
-
-  cx.shadowBlur=0;cx.globalAlpha=1;cx.textAlign='left';
-}

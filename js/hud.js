@@ -51,7 +51,6 @@ function drawHUDCanvas(){
     cx.shadowBlur=18;cx.shadowColor='#ff0';cx.fillStyle='#ffee00';cx.font='bold 30px Courier New';
     cx.fillText(`WAVE  ${waveIdx}  CLEAR!`,W/2,H*.35+46);
     cx.shadowBlur=0;
-    // Loading bar
     const bx=W/2-90,by=H*.35+60,bw=180,bh=6;
     cx.fillStyle='#1a1a1a';cx.fillRect(bx,by,bw,bh);
     cx.fillStyle='#ffcc00';cx.fillRect(bx,by,Math.round(bw*prog),bh);
@@ -64,49 +63,43 @@ function drawHUDCanvas(){
 
 // ── 우측 수직 진행 바 ──────────────────────────────────────────────
 // 현재 웨이브를 TOTAL_WAVES 기준으로 아래→위 방향으로 표시
-// 보스 웨이브(5,10,15,20)마다 빨간 마커, 완주 시 노랗게 점멸
+// 보스 웨이브(5,10,15,20,25,30)마다 빨간 마커, 완주 시 노랗게 점멸
 function drawProgressBar(){
   if(STATE==='IDLE')return;
   const BX=W-6, BW=4;
-  const BY=26, BH=H-34; // 상단 보스 HP바 아래부터 하단까지
+  const BY=26, BH=H-34;
 
-  // 진행률 계산 (0~1)
   const progress=STATE==='PLAYING'||STATE==='PAUSED'
     ?Math.min(1,Math.max(0,(waveIdx-1)/(TOTAL_WAVES-1)))
     :waveIdx>=TOTAL_WAVES?1:0;
 
-  // 트랙 배경
   cx.fillStyle='rgba(0,0,0,.55)';
   cx.fillRect(BX,BY,BW,BH);
 
-  // 채워진 부분 — 아래서 위로, 배경 페이즈와 같은 색 계열
   const fillH=Math.round(BH*progress);
   if(fillH>0){
     const gr=cx.createLinearGradient(0,BY+BH,0,BY);
-    gr.addColorStop(0,'#1a6fc8');   // 지구
-    gr.addColorStop(.14,'#0a1a3a'); // 대기권
-    gr.addColorStop(.28,'#300c0c'); // 화성
-    gr.addColorStop(.42,'#083040'); // 천왕성/해왕성
-    gr.addColorStop(.57,'#07081a'); // 명왕성/카이퍼
-    gr.addColorStop(.72,'#030010'); // 은하
-    gr.addColorStop(1,'#020d04');   // 외계 행성
+    gr.addColorStop(0,'#1a6fc8');
+    gr.addColorStop(.14,'#0a1a3a');
+    gr.addColorStop(.28,'#300c0c');
+    gr.addColorStop(.42,'#083040');
+    gr.addColorStop(.57,'#07081a');
+    gr.addColorStop(.72,'#030010');
+    gr.addColorStop(1,'#020d04');
     cx.fillStyle=gr;
     cx.fillRect(BX,BY+BH-fillH,BW,fillH);
   }
 
-  // 보스 웨이브 구분 마커 (5,10,15,20,25,30)
   [5,10,15,20,25,30].forEach(bw=>{
     const ratio=(bw-1)/(TOTAL_WAVES-1);
     const my=BY+BH-Math.round(BH*ratio);
     const reached=waveIdx>=bw;
     cx.fillStyle=reached?'#ff3333':'#2a0000';
     cx.fillRect(BX-2,my-1,BW+4,2);
-    // 보스 마커 옆에 작은 삼각형 (위협 표시)
-    if(reached){cx.fillStyle='#ff3333';}else{cx.fillStyle='#1a0000';}
+    cx.fillStyle=reached?'#ff3333':'#1a0000';
     cx.fillRect(BX-4,my-2,2,4);
   });
 
-  // 현재 위치 인디케이터 (노란 가로선)
   if((STATE==='PLAYING'||STATE==='PAUSED')&&wave>0){
     const iy=BY+BH-Math.round(BH*progress);
     const pulse=.7+.3*Math.sin(performance.now()*.007);
@@ -114,13 +107,11 @@ function drawProgressBar(){
     cx.fillStyle='#ffee00';
     cx.fillRect(BX-3,iy-1,BW+6,3);
     cx.globalAlpha=1;
-    // 비행기 아이콘 (▲ 모양 2px 픽셀)
     cx.fillStyle='#ffee00';
     cx.fillRect(BX-2,iy-4,2,2);
     cx.fillRect(BX-3,iy-2,4,2);
   }
 
-  // 완주(TOTAL_WAVES) 도달 시 점멸 강조
   if(progress>=1){
     const gl=.4+.4*Math.sin(performance.now()*.01);
     cx.globalAlpha=gl;
@@ -129,173 +120,9 @@ function drawProgressBar(){
     cx.globalAlpha=1;
   }
 
-  // 테두리
   cx.strokeStyle='#181818';cx.lineWidth=1;cx.strokeRect(BX,BY,BW,BH);
-
-  // 상단 목적지 라벨
   cx.fillStyle=progress>=1?'#ffee00':'#252525';
   cx.font='6px Courier New';cx.textAlign='center';
   cx.fillText('★',BX+BW/2,BY-2);
   cx.textAlign='left';
-}
-
-// ── Overlays ──────────────────────────────────────────────────────
-function drawIdle(){
-  cx.fillStyle='rgba(0,0,0,.88)';cx.fillRect(0,0,W,H);cx.textAlign='center';
-  // Title
-  cx.shadowBlur=32;cx.shadowColor='#f80';cx.fillStyle='#f80';
-  cx.font='bold 56px Courier New';cx.fillText('STRIKERS',W/2,H/2-86);
-  cx.shadowBlur=16;cx.shadowColor='#ff0';cx.fillStyle='#ffcc00';
-  cx.font='bold 34px Courier New';cx.fillText('1945+',W/2,H/2-44);
-  cx.shadowBlur=0;
-  // Controls box
-  const bx=W/2-132,by=H/2-26,bw=264,bh=116;
-  cx.fillStyle='rgba(255,255,255,.035)';cx.fillRect(bx,by,bw,bh);
-  cx.strokeStyle='#2a2a2a';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
-  cx.fillStyle='#3a3a3a';cx.font='9px Courier New';cx.fillText('— CONTROLS —',W/2,by+14);
-  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['FIRE','AUTO'],['BOMB','Z'],['SKILL','X  (20 kills → charged)'],['PAUSE','SPACE']];
-  ctrl.forEach(([k,v],i)=>{
-    const y=by+28+i*17;
-    cx.fillStyle='#444';cx.textAlign='right';cx.font='9px Courier New';cx.fillText(k,W/2-8,y);
-    cx.fillStyle='#aaa';cx.textAlign='left';cx.font='bold 9px Courier New';cx.fillText(v,W/2+8,y);
-  });
-  // Start prompt (blink)
-  const blink=Math.floor(performance.now()/550)%2===0;
-  cx.shadowBlur=blink?12:0;cx.shadowColor='#ff0';
-  cx.fillStyle=blink?'#ffee00':'#665500';
-  cx.font='bold 16px Courier New';cx.textAlign='center';
-  cx.fillText('PRESS  ENTER  TO  START',W/2,H/2+106);
-  cx.shadowBlur=0;
-  // Hi-score
-  cx.fillStyle='#3a3a3a';cx.font='11px Courier New';
-  cx.fillText(`HI-SCORE  ${String(hiScore).padStart(8,'0')}`,W/2,H/2+130);
-
-  // ── HUD 안내 ──
-  const hx=W/2-148,hy=H/2+152,hw=296,hh=86;
-  cx.fillStyle='rgba(255,255,255,.025)';cx.fillRect(hx,hy,hw,hh);
-  cx.strokeStyle='#222';cx.lineWidth=1;cx.strokeRect(hx,hy,hw,hh);
-  cx.fillStyle='#2a2a2a';cx.font='9px Courier New';cx.textAlign='center';
-  cx.fillText('— STATUS BAR GUIDE —',W/2,hy+13);
-  const guide=[
-    ['✈','LIFE','피격 1회마다 감소. 0이면 게임 오버'],
-    ['◉','BOMB','Z로 발동. 전체 적 즉시 제거'],
-    ['▬▬','SKILL','20킬 충전 후 X로 파이어볼 발동'],
-    ['P·R·N·S','ITEM','파워업 아이템 — 무기/속사/관통/쉴드'],
-  ];
-  guide.forEach(([icon,label,desc],i)=>{
-    const gy=hy+26+i*15;
-    cx.fillStyle='#ffcc44';cx.textAlign='left';cx.font='bold 9px Courier New';
-    cx.fillText(icon,hx+8,gy);
-    cx.fillStyle='#555';cx.font='9px Courier New';
-    cx.fillText(label,hx+46,gy);
-    cx.fillStyle='#888';
-    cx.fillText(desc,hx+90,gy);
-  });
-  cx.textAlign='left';
-}
-function drawPaused(){
-  cx.fillStyle='rgba(0,0,0,.75)';cx.fillRect(0,0,W,H);
-  cx.textAlign='center';
-
-  // ── PAUSED 타이틀 ──
-  cx.shadowBlur=18;cx.shadowColor='#4af';cx.fillStyle='#88ddff';
-  cx.font='bold 38px Courier New';cx.fillText('PAUSED',W/2,H/2-148);
-  cx.shadowBlur=0;
-
-  // ── 스테이터스 카드 (웨이브 + 점수) ──
-  const sx=W/2-116,sy=H/2-130,sw=232,sh=50;
-  cx.fillStyle='rgba(255,255,255,.04)';cx.fillRect(sx,sy,sw,sh);
-  cx.strokeStyle='#2a3a4a';cx.lineWidth=1;cx.strokeRect(sx,sy,sw,sh);
-  // 웨이브
-  cx.fillStyle='#445566';cx.font='9px Courier New';cx.textAlign='left';
-  cx.fillText('WAVE',sx+14,sy+16);
-  cx.fillStyle='#aaddff';cx.font='bold 20px Courier New';
-  cx.fillText(String(wave||'-').padStart(2,' '),sx+14,sy+40);
-  // 구분선
-  cx.strokeStyle='#1e2e3e';cx.lineWidth=1;
-  cx.beginPath();cx.moveTo(W/2,sy+8);cx.lineTo(W/2,sy+sh-8);cx.stroke();
-  // 점수
-  cx.fillStyle='#445566';cx.font='9px Courier New';cx.textAlign='right';
-  cx.fillText('SCORE',sx+sw-14,sy+16);
-  cx.fillStyle='#ffee88';cx.font='bold 20px Courier New';
-  cx.fillText(String(score).padStart(8,'0'),sx+sw-14,sy+40);
-
-  // ── 조작법 박스 ──
-  const cx2=W/2,cy=H/2-58;
-  const bx=W/2-116,bh=120;
-  cx.fillStyle='rgba(255,255,255,.03)';cx.fillRect(bx,cy,232,bh);
-  cx.strokeStyle='#222';cx.lineWidth=1;cx.strokeRect(bx,cy,232,bh);
-  cx.fillStyle='#334';cx.font='9px Courier New';cx.textAlign='center';
-  cx.fillText('— CONTROLS —',W/2,cy+14);
-  const ctrl=[['MOVE','← → ↑ ↓  /  W A S D'],['BOMB','Z'],['SKILL','X  (20킬 충전 후)'],['PAUSE','SPACE']];
-  ctrl.forEach(([k,v],i)=>{
-    const y=cy+30+i*20;
-    cx.fillStyle='#3a4a5a';cx.textAlign='right';cx.font='9px Courier New';cx.fillText(k,W/2-10,y);
-    cx.fillStyle='#99bbcc';cx.textAlign='left';cx.font='bold 9px Courier New';cx.fillText(v,W/2+10,y);
-  });
-
-  // ── 재개 프롬프트 ──
-  const blink=Math.floor(performance.now()/600)%2===0;
-  cx.shadowBlur=blink?8:0;cx.shadowColor='#4af';
-  cx.fillStyle=blink?'#88ddff':'#223344';
-  cx.font='bold 13px Courier New';cx.textAlign='center';
-  cx.fillText('[ SPACE ]  RESUME',W/2,H/2+76);
-  cx.shadowBlur=0;cx.textAlign='left';
-}
-function drawGameOver(){
-  cx.fillStyle='rgba(0,0,0,.82)';cx.fillRect(0,0,W,H);cx.textAlign='center';
-  // Title
-  cx.shadowBlur=18;cx.shadowColor='#cc0000';cx.fillStyle='#ff4444';
-  cx.font='bold 44px Courier New';cx.fillText('GAME  OVER',W/2,H/2-68);
-  cx.shadowBlur=0;
-  // Score card
-  cx.fillStyle='rgba(255,255,255,.04)';cx.fillRect(W/2-110,H/2-50,220,88);
-  cx.strokeStyle='#2a2a2a';cx.lineWidth=1;cx.strokeRect(W/2-110,H/2-50,220,88);
-  cx.fillStyle='#444';cx.font='10px Courier New';cx.fillText('SCORE',W/2,H/2-30);
-  cx.fillStyle='#ffffff';cx.font='bold 26px Courier New';
-  cx.fillText(String(score).padStart(8,'0'),W/2,H/2-6);
-  cx.fillStyle='#333';cx.font='9px Courier New';cx.fillText('HI-SCORE',W/2,H/2+16);
-  cx.fillStyle='#aa9900';cx.font='bold 15px Courier New';
-  cx.fillText(String(hiScore).padStart(8,'0'),W/2,H/2+34);
-  // New hi-score flash
-  if(score>0&&score>=hiScore){
-    const nb=Math.floor(performance.now()/450)%2===0;
-    if(nb){cx.shadowBlur=8;cx.shadowColor='#f80';cx.fillStyle='#ff8800';cx.font='bold 13px Courier New';cx.fillText('✦  NEW HI-SCORE  ✦',W/2,H/2+56);cx.shadowBlur=0;}
-  }
-  // Restart prompt (blink)
-  const blink=Math.floor(performance.now()/620)%2===0;
-  cx.fillStyle=blink?'#ffee00':'#554400';
-  cx.font='bold 14px Courier New';
-  cx.fillText('PRESS  ENTER  TO  RETRY',W/2,H/2+82);
-  cx.textAlign='left';
-}
-function drawGameClear(){
-  cx.fillStyle='rgba(0,0,0,.88)';cx.fillRect(0,0,W,H);cx.textAlign='center';
-  // 타이틀
-  cx.shadowBlur=40;cx.shadowColor='#ffdd00';cx.fillStyle='#ffee44';
-  cx.font='bold 48px Courier New';cx.fillText('GAME  CLEAR',W/2,H/2-90);
-  cx.shadowBlur=0;
-  // 서브타이틀
-  cx.fillStyle='#88ffcc';cx.font='bold 14px Courier New';
-  cx.fillText('ALL  30  WAVES  COMPLETED',W/2,H/2-56);
-  // 점수 카드
-  cx.fillStyle='rgba(255,255,100,.06)';cx.fillRect(W/2-110,H/2-40,220,96);
-  cx.strokeStyle='#443300';cx.lineWidth=1;cx.strokeRect(W/2-110,H/2-40,220,96);
-  cx.fillStyle='#665500';cx.font='10px Courier New';cx.fillText('FINAL SCORE',W/2,H/2-18);
-  cx.fillStyle='#ffee00';cx.font='bold 28px Courier New';
-  cx.fillText(String(score).padStart(8,'0'),W/2,H/2+10);
-  cx.fillStyle='#444';cx.font='9px Courier New';cx.fillText('HI-SCORE',W/2,H/2+30);
-  cx.fillStyle='#aa9900';cx.font='bold 14px Courier New';
-  cx.fillText(String(hiScore).padStart(8,'0'),W/2,H/2+48);
-  if(score>=hiScore&&score>0){
-    const nb=Math.floor(performance.now()/450)%2===0;
-    if(nb){cx.shadowBlur=8;cx.shadowColor='#f80';cx.fillStyle='#ff8800';cx.font='bold 13px Courier New';cx.fillText('✦  NEW HI-SCORE  ✦',W/2,H/2+68);cx.shadowBlur=0;}
-  }
-  // 재시작 안내 (깜빡)
-  const blink=Math.floor(performance.now()/600)%2===0;
-  cx.shadowBlur=blink?10:0;cx.shadowColor='#ffdd00';
-  cx.fillStyle=blink?'#ffee00':'#554400';
-  cx.font='bold 14px Courier New';
-  cx.fillText('PRESS  ENTER  TO  PLAY  AGAIN',W/2,H/2+96);
-  cx.shadowBlur=0;cx.textAlign='left';
 }
