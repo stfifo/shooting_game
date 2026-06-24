@@ -11,9 +11,20 @@ function randWave(n){
     ['A','B','B','C','C'],        // tier3: B/C 비율 증가
     ['B','B','C','C','C'],        // tier4: B/C 위주
   ];
+
+  // wave 1: 튜토리얼 난이도 — A형 소형 편대 1개, 단순 TOP 진입
+  if(n===1){
+    const fmt=pick(['TWIN2','V5','LINE5']);
+    const maxSp=Math.max(0,...(FMTS[fmt]||[]).map(o=>Math.abs(o[0])));
+    const lo=maxSp+55,hi=W-maxSp-55;
+    return [['A',fmt,lo<hi?rnd(lo,hi):W/2,rnd(90,150),0,'TOP']];
+  }
+
   // 티어별 편대 수 범위 [min, max]
   const countRange=[[1,2],[1,3],[2,3],[2,4]][tier-1];
   const count=countRange[0]+Math.floor(Math.random()*(countRange[1]-countRange[0]+1));
+  // 편대 간 출현 간격: tier1은 여유 있게, 이후 티어는 점점 빠르게
+  const gapRange=tier===1?[3.0,5.5]:[2.5,4.5];
   const squads=[];let delay=0;
   for(let i=0;i<count;i++){
     const type=pick(typePools[tier-1]);
@@ -24,7 +35,7 @@ function randWave(n){
     const lo=maxSp+55,hi=W-maxSp-55;
     const pivotX=lo<hi?rnd(lo,hi):W/2;
     squads.push([type,fmt,pivotX,rnd(75,185),delay,entry]);
-    delay+=rnd(1.5,3.5);
+    delay+=rnd(gapRange[0],gapRange[1]);
   }
   return squads;
 }
