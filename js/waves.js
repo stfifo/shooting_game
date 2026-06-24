@@ -53,7 +53,7 @@ function launchWave(n){
   betweenWave=false;updateHUD();
 }
 function updateWaves(dt){
-  if(betweenWave){betweenT-=dt;if(betweenT<=0){betweenWave=false;launchWave(waveIdx+1);}return;}
+  if(betweenWave){betweenT-=dt;if(betweenT<=0){betweenWave=false;if(waveIdx<TOTAL_WAVES)launchWave(waveIdx+1);}return;}
   updateBossWarn(dt);
   waveSquads.forEach(sq=>updateSquad(sq,dt));
   if(bossWave)updateBoss(dt);

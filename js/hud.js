@@ -245,3 +245,33 @@ function drawGameOver(){
   cx.fillText('PRESS  ENTER  TO  RETRY',W/2,H/2+82);
   cx.textAlign='left';
 }
+function drawGameClear(){
+  cx.fillStyle='rgba(0,0,0,.88)';cx.fillRect(0,0,W,H);cx.textAlign='center';
+  // 타이틀
+  cx.shadowBlur=40;cx.shadowColor='#ffdd00';cx.fillStyle='#ffee44';
+  cx.font='bold 48px Courier New';cx.fillText('GAME  CLEAR',W/2,H/2-90);
+  cx.shadowBlur=0;
+  // 서브타이틀
+  cx.fillStyle='#88ffcc';cx.font='bold 14px Courier New';
+  cx.fillText('ALL  20  WAVES  COMPLETED',W/2,H/2-56);
+  // 점수 카드
+  cx.fillStyle='rgba(255,255,100,.06)';cx.fillRect(W/2-110,H/2-40,220,96);
+  cx.strokeStyle='#443300';cx.lineWidth=1;cx.strokeRect(W/2-110,H/2-40,220,96);
+  cx.fillStyle='#665500';cx.font='10px Courier New';cx.fillText('FINAL SCORE',W/2,H/2-18);
+  cx.fillStyle='#ffee00';cx.font='bold 28px Courier New';
+  cx.fillText(String(score).padStart(8,'0'),W/2,H/2+10);
+  cx.fillStyle='#444';cx.font='9px Courier New';cx.fillText('HI-SCORE',W/2,H/2+30);
+  cx.fillStyle='#aa9900';cx.font='bold 14px Courier New';
+  cx.fillText(String(hiScore).padStart(8,'0'),W/2,H/2+48);
+  if(score>=hiScore&&score>0){
+    const nb=Math.floor(performance.now()/450)%2===0;
+    if(nb){cx.shadowBlur=8;cx.shadowColor='#f80';cx.fillStyle='#ff8800';cx.font='bold 13px Courier New';cx.fillText('✦  NEW HI-SCORE  ✦',W/2,H/2+68);cx.shadowBlur=0;}
+  }
+  // 재시작 안내 (깜빡)
+  const blink=Math.floor(performance.now()/600)%2===0;
+  cx.shadowBlur=blink?10:0;cx.shadowColor='#ffdd00';
+  cx.fillStyle=blink?'#ffee00':'#554400';
+  cx.font='bold 14px Courier New';
+  cx.fillText('PRESS  ENTER  TO  PLAY  AGAIN',W/2,H/2+96);
+  cx.shadowBlur=0;cx.textAlign='left';
+}

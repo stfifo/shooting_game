@@ -25,6 +25,7 @@ function draw(){
   if(STATE==='IDLE')drawIdle();
   if(STATE==='PAUSED')drawPaused();
   if(STATE==='GAMEOVER')drawGameOver();
+  if(STATE==='CLEAR')drawGameClear();
   cx.restore();
 }
 let lastT=0;

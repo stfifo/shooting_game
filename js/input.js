@@ -7,7 +7,7 @@ addEventListener('keydown',e=>{
   keys.add(e.code);setKeyVis(e.code,true);
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Enter'].includes(e.code))e.preventDefault();
   if(e.code==='Space'){if(STATE==='PLAYING')STATE='PAUSED';else if(STATE==='PAUSED')STATE='PLAYING';}
-  if((e.code==='Enter'||e.code==='Space')&&(STATE==='IDLE'||STATE==='GAMEOVER'))startGame();
+  if((e.code==='Enter'||e.code==='Space')&&(STATE==='IDLE'||STATE==='GAMEOVER'||STATE==='CLEAR'))startGame();
   if(STATE==='PLAYING'){if(e.code==='KeyZ')useBomb();if(e.code==='KeyX')useSkill();}
 });
 addEventListener('keyup',e=>{keys.delete(e.code);setKeyVis(e.code,false);});

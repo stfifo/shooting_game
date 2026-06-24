@@ -92,7 +92,10 @@ function killBoss(){
   addFx(`BOSS DOWN! +${pts}`,W/2,H*.4,'#ff0',22);doShake(14,.9);flashIt('rgba(255,200,0,.65)');
   [{x:-22,t:'P'},{x:22,t:'B'},{x:0,t:'F'}].forEach(d=>pups.push({x:boss.x+d.x,y:boss.y,vy:72,w:18,h:18,t:d.t,alive:true,bob:rnd(0,Math.PI*2)}));
   if(Math.random()<.3)pups.push({x:boss.x,y:boss.y+30,vy:72,w:18,h:18,t:'L',alive:true,bob:0});
-  updateHUD();betweenWave=true;betweenT=1.5;score+=500*waveIdx;
+  score+=500*waveIdx;updateHUD();
+  if(waveIdx>=TOTAL_WAVES){
+    setTimeout(()=>{STATE='CLEAR';if(score>hiScore){hiScore=score;localStorage.setItem('LocalMaxScore',hiScore);}},1800);
+  }else{betweenWave=true;betweenT=1.5;}
 }
 
 // ── Boss Warning Cutscene ─────────────────────────────────────────
