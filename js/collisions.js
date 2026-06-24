@@ -31,6 +31,15 @@ function checkCollisions(){
   if(boss&&boss.alive&&!boss.entering){const bh={x:boss.x,y:boss.y,w:boss.w*.55,h:boss.h*.55};if(ovlp(bh,P))hitPlayer();}
 }
 function hitPlayer(){
+  // 이스터에그: 첫 피격까지 이동키 미사용 → 웨이브 29 워프 (피격 페널티 없음)
+  if(!hasMoved){
+    hasMoved=true; // 재발동 방지
+    doShake(12,.8);flashIt('rgba(255,220,0,.8)');
+    addFx('✦ STILL AS STONE ✦',W/2,H/2-18,'#ffe000',22);
+    addFx('WARP → WAVE 29',W/2,H/2+14,'#fff',15);
+    setTimeout(()=>{if(STATE==='PLAYING')launchWave(29);},1200);
+    return;
+  }
   if(shieldT>0){
     shieldT=0;
     addFx('SHIELD BREAK!',P.x,P.y-24,'#0f8',15);

@@ -2,9 +2,11 @@
 const keys=new Set();
 const KEY_VIS={ArrowUp:'ku',KeyW:'ku',ArrowDown:'kd',KeyS:'kd',ArrowLeft:'kl',KeyA:'kl',ArrowRight:'kr',KeyD:'kr',KeyZ:'k-z',KeyX:'k-x',Space:'k-space',Enter:'k-start'};
 function setKeyVis(code,on){const id=KEY_VIS[code];if(id){const el=document.getElementById(id);if(el)el.classList.toggle('active',on);}}
+const MOVE_KEYS=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD']);
 addEventListener('keydown',e=>{
   if(keys.has(e.code))return;
   keys.add(e.code);setKeyVis(e.code,true);
+  if(STATE==='PLAYING'&&MOVE_KEYS.has(e.code))hasMoved=true;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Enter'].includes(e.code))e.preventDefault();
   if(e.code==='Space'){if(STATE==='PLAYING')STATE='PAUSED';else if(STATE==='PAUSED')STATE='PLAYING';}
   if((e.code==='Enter'||e.code==='Space')&&(STATE==='IDLE'||STATE==='GAMEOVER'||STATE==='CLEAR'))startGame();
