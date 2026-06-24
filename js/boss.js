@@ -12,7 +12,7 @@ function spawnBossNow(n){
   const tier=Math.ceil(n/5);
   const hp=Math.floor(80+tier*90);        // tier1→170, tier2→260, tier3→350, tier4→440
   const speedMul=0.6+tier*0.1;            // tier1→0.7, tier2→0.8, tier3→0.9, tier4→1.0
-  const shootMul=1.8-tier*0.2;            // tier1→1.6배 느림, tier4→원본
+  const shootMul=2.5-tier*0.2;            // tier1→2.3배 느림, tier6→1.3배 (모든 tier에서 기본보다 느림)
   boss={x:W/2,y:-100,w:90,h:60,hp,maxHp:hp,phase:1,moveDir:1,sineT:0,
         shootT:1.5,summonT:9,specialT:rnd(4,6),dodgeT:rnd(1,2),
         alive:true,frame:0,entering:true,pathT:0,tier,speedMul,shootMul,
