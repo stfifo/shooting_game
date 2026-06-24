@@ -96,10 +96,11 @@ const EDEFS={
 function drawEnemies(){
   getEnemies().forEach(m=>{
     EDEFS[m.type]?.draw(m.x,m.y,m.frame);
-    if(m.type==='B'&&m.hp<m.maxHp){
-      cx.fillStyle='#222';cx.fillRect(m.x-22,m.y-m.h/2-9,44,4);
-      const pw=44*m.hp/m.maxHp;
-      for(let i=0;i<Math.floor(pw/3);i++){cx.fillStyle=m.hp/m.maxHp>.5?'#4f4':'#f84';cx.fillRect(m.x-22+i*3,m.y-m.h/2-9,2,4);}
+    if(m.hp<m.maxHp&&m.maxHp>1){
+      const bw=Math.min(44,m.w+4);
+      cx.fillStyle='#222';cx.fillRect(m.x-bw/2,m.y-m.h/2-9,bw,4);
+      const pw=bw*m.hp/m.maxHp;
+      for(let i=0;i<Math.floor(pw/3);i++){cx.fillStyle=m.hp/m.maxHp>.5?'#4f4':'#f84';cx.fillRect(m.x-bw/2+i*3,m.y-m.h/2-9,2,4);}
     }
   });
   if(boss&&boss.alive)drawBossSprite(boss);

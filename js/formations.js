@@ -34,9 +34,13 @@ let waveSquads=[];
 function makeSquad(type,fmtKey,pivotX,targetY,delay=0,entryKey='TOP'){
   const def=EDEFS[type]||EDEFS.A, offs=FMTS[fmtKey]||FMTS.SOLO;
   const bp=(ENTRY[entryKey]||ENTRY.TOP)(pivotX,targetY);
+  // 웨이브 tier(1~4)마다 HP 배율: ×1 / ×1.5 / ×2 / ×3
+  const tier=Math.min(4,Math.ceil((waveIdx||1)/5));
+  const hpMul=[1,1.5,2,3][tier-1];
+  const scaledHp=Math.max(1,Math.round(def.hp*hpMul));
   return{type,def,offs,delay,delayT:delay,pivot:{x:bp[0],y:bp[1]},bp,targetX:pivotX,targetY,pathT:0,
     phase:delay>0?'DELAY':'ENTER',holdT:3.5+rnd(0,2),sweepDir:rnd(0,1)>.5?1:-1,frameN:0,
-    members:offs.map((off,i)=>({x:bp[0]+off[0],y:bp[1]+off[1],w:def.w,h:def.h,hp:def.hp,maxHp:def.hp,
+    members:offs.map((off,i)=>({x:bp[0]+off[0],y:bp[1]+off[1],w:def.w,h:def.h,hp:scaledHp,maxHp:scaledHp,
       type,alive:true,frame:0,shootT:1+rnd(0,2.5),spawnT:i*.13,ready:false,
       atk:false,atkVx:0,atkVy:0,atkReT:0}))};
 }
