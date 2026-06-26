@@ -1,7 +1,7 @@
 // ── Special Abilities ────────────────────────────────────────────
 function useBomb(){
   if(bombs<=0)return;bombs--;
-  const r=BOMB_DIST*30;
+  const r=bombDist*30;
   getEnemies().forEach(m=>{
     const dx=m.x-P.x,dy=m.y-P.y;
     if(dx*dx+dy*dy<=r*r)killEnemy(m,true);
@@ -11,7 +11,7 @@ function useBomb(){
     boss.hp=Math.max(1,boss.hp-Math.floor(boss.maxHp*dmg));
     addHitSpark(boss.x,boss.y);
   }
-  addBombBlast(P.x,P.y,BOMB_DIST*30);
+  addBombBlast(P.x,P.y,bombDist*30);
   addFx('BOMB!',W/2,H/2,'#f80',28);flashIt('rgba(255,170,40,.6)');doShake(10,.45);updateHUD();
 }
 function useSkill(){
