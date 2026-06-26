@@ -29,7 +29,7 @@ function applyItem(t){
     case'F':ghostT=GHOST_DUR;addFx('WING FORMATION!',P.x,P.y-24,'#8df',14);break;
     case'R':rapidT=RAPID_DUR;addFx('RAPID FIRE!',P.x,P.y-20,'#0ff',15);break;
     case'N':pierceT=PIERCE_DUR;addFx('PIERCE SHOT!',P.x,P.y-20,'#c0f',15);break;
-    case'S':shieldT=SHIELD_DUR;addFx('SHIELD ON!',P.x,P.y-20,'#0f8',15);break;
+    case'S':shieldT=1;addFx('SHIELD ON!',P.x,P.y-20,'#0f8',15);break;
   }
   updateHUD();
 }

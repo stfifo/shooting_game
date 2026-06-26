@@ -19,16 +19,16 @@ function updatePowerupPanel(){
     {id:'wing',   t:ghostT,          max:GHOST_DUR,  dur:true},
     {id:'rapid',  t:rapidT,          max:RAPID_DUR,  dur:true},
     {id:'pierce', t:pierceT,         max:PIERCE_DUR, dur:true},
-    {id:'shield', t:shieldT,         max:SHIELD_DUR, dur:true},
+    {id:'shield', t:shieldT,         max:1,          dur:true, fmt:()=>'ON', noExp:true},
   ];
-  cfg.forEach(({id,t,max,dur,fmt})=>{
+  cfg.forEach(({id,t,max,dur,fmt,noExp})=>{
     const slot=document.getElementById(`pu-${id}`);
     const fill=document.getElementById(`puf-${id}`);
     const time=document.getElementById(`put-${id}`);
     if(!slot)return;
     const on=dur?t>0:true;
     slot.classList.toggle('active',on);
-    slot.classList.toggle('expiring',dur&&on&&t<3);
+    slot.classList.toggle('expiring',!noExp&&dur&&on&&t<3);
     if(on){
       fill.style.width=`${Math.min(100,t/max*100).toFixed(1)}%`;
       time.textContent=fmt?fmt(t):`${Math.ceil(t)}s`;

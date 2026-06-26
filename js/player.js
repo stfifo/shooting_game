@@ -38,8 +38,7 @@ function drawPlayer(){
   // 방어막 링 (쉴드 활성 시)
   if(shieldT>0){
     const pulse=.5+.4*Math.sin(performance.now()*.009);
-    const fading=shieldT<3?shieldT/3:1;
-    cx.globalAlpha=pulse*fading;cx.strokeStyle='#00ff88';cx.lineWidth=2.5;
+    cx.globalAlpha=pulse;cx.strokeStyle='#00ff88';cx.lineWidth=2.5;
     cx.beginPath();cx.arc(Math.round(P.x),Math.round(P.y),24,0,Math.PI*2);cx.stroke();
     cx.globalAlpha=1;cx.lineWidth=1;
   }
@@ -66,7 +65,6 @@ function updatePlayer(dt){
   if(ghostT>0){ghostT-=dt;if(ghostT<0)ghostT=0;}
   if(rapidT>0){rapidT-=dt;if(rapidT<0)rapidT=0;}
   if(pierceT>0){pierceT-=dt;if(pierceT<0)pierceT=0;}
-  if(shieldT>0){shieldT-=dt;if(shieldT<0)shieldT=0;}
 }
 
 function shootFrom(x,y,wpn){
