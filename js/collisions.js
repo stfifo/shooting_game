@@ -4,7 +4,7 @@ function killEnemy(m,bomb=false){
   m.alive=false;
   const mul=bomb?1:Math.max(1,1+Math.floor(combo/5));
   score+=(EDEFS[m.type]?.pts||100)*mul;
-  if(!bomb){skillKills=Math.min(SKILL_GOAL,skillKills+1);if(skillKills>=SKILL_GOAL&&P&&P.weapon!==5)addFx('SKILL READY [X]',W/2,80,'#ff0',13);}
+  if(!bomb){const skillGain=wave>15?2:1;skillKills=Math.min(SKILL_GOAL,skillKills+skillGain);if(skillKills>=SKILL_GOAL&&P&&P.weapon!==5)addFx('SKILL READY [X]',W/2,80,'#ff0',13);}
   combo++;comboT=3;explode(m.x,m.y,m.type);dropItem(m.x,m.y);
   if(!bomb)addFx(`+${(EDEFS[m.type]?.pts||100)*mul}`,m.x,m.y-10,'#fff',12);
   updateHUD();
@@ -46,7 +46,7 @@ function hitPlayer(){
     doShake(5,.25);flashIt('rgba(0,255,136,.25)');updateHUD();return;
   }
   rapidT=0;pierceT=0;
-  lives--;P.invT=2.5;P.weapon=1;P.wpTimer=0;P.fireT=.5;
+  lives--;P.invT=2.5;if(!fireballT){P.weapon=1;P.wpTimer=0;}P.fireT=.5;
   doShake(8,.38);flashIt('rgba(255,0,0,.4)');explode(P.x,P.y,'A');
   if(lives<=0){P.alive=false;setTimeout(()=>{STATE='GAMEOVER';if(score>hiScore){hiScore=score;localStorage.setItem('LocalMaxScore',hiScore);}},1800);}
   updateHUD();
