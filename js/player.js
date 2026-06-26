@@ -35,6 +35,14 @@ function drawPlayer(){
     for(let r=-2;r<=2;r++)for(let c=-2;c<=2;c++)if(r*r+c*c<6)cx.fillRect(Math.round(P.x+c*PX*2),Math.round(P.y+r*PX*2),PX*2,PX*2);
     cx.globalAlpha=1;
   }
+  // 폭탄 반경 표시 (폭탄 보유 시 항상)
+  if(bombs>0){
+    const br=BOMB_DIST*30;
+    cx.globalAlpha=0.9;cx.strokeStyle='#ff8800';cx.lineWidth=1;
+    cx.setLineDash([6,5]);
+    cx.beginPath();cx.arc(Math.round(P.x),Math.round(P.y),br,0,Math.PI*2);cx.stroke();
+    cx.setLineDash([]);cx.globalAlpha=1;cx.lineWidth=1;
+  }
   // 방어막 링 (쉴드 활성 시)
   if(shieldT>0){
     const pulse=.5+.4*Math.sin(performance.now()*.009);
