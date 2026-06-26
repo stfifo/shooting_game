@@ -193,11 +193,25 @@ function drawPixelNeptune(px,py,r){
 }
 function drawPixelPluto(px,py,r){
   const S=2,ir=Math.ceil(r/S);
+  const hs=ir*0.45, hcy=ir*0.08; // Tombaugh Regio 하트 크기·중심 오프셋
   for(let y=-ir;y<=ir;y++)for(let x=-ir;x<=ir;x++){
-    if(x*x+y*y<ir*ir){const n=(x+y+ir*2)/(ir*4);cx.fillStyle=n>.6?'#aa9988':n>.35?'#887766':'#665544';cx.fillRect(px+x*S,py+y*S,S,S);}
+    if(x*x+y*y>=ir*ir)continue;
+    const nhx=x/hs, nhy=(y-hcy)/hs;
+    // 캔버스 좌표계(y↓)에서 위쪽 두 봉우리, 아래 꼭짓점을 갖는 하트: (r²-1)³+x²y³≤0
+    const hv=Math.pow(nhx*nhx+nhy*nhy-1,3)+nhx*nhx*Math.pow(nhy,3);
+    if(hv<=0){
+      // Tombaugh Regio — 밝은 크림색 질소 얼음 평원
+      const d=Math.sqrt(nhx*nhx+nhy*nhy);
+      cx.fillStyle=d<0.45?'#f8ecd8':'#eedfc0';
+    } else {
+      // 표면 — 적갈색 계열 (목성과 달리 줄무늬 없이 얼룩덜룩)
+      const t=((x*x+y*y)/(ir*ir)*0.4+(x*0.3+y*0.2+ir)/(ir*2)*0.6);
+      cx.fillStyle=t>.65?'#88706a':t>.42?'#6a5248':'#50403a';
+    }
+    cx.fillRect(px+x*S,py+y*S,S,S);
   }
-  // 극관
-  cx.fillStyle='#ddccbb';for(let x=-2;x<=2;x++)cx.fillRect(px+x*S,py-ir*S+S,S,S);
+  // 질소 극관
+  cx.fillStyle='#eddfc8';for(let x=-2;x<=2;x++)cx.fillRect(px+x*S,py-ir*S+S,S,S);
 }
 function drawPixelIceRock(r){
   const S=2,ir=Math.ceil(r/S);
