@@ -29,7 +29,9 @@ function applyItem(t){
     case'F':ghostT=GHOST_DUR;addFx('WING FORMATION!',P.x,P.y-24,'#8df',14);break;
     case'R':rapidT=RAPID_DUR;addFx('RAPID FIRE!',P.x,P.y-20,'#0ff',15);break;
     case'N':pierceT=PIERCE_DUR;addFx('PIERCE SHOT!',P.x,P.y-20,'#c0f',15);break;
-    case'S':shieldT=1;addFx('SHIELD ON!',P.x,P.y-20,'#0f8',15);break;
+    case'S':shieldT=1;addFx('SHIELD ON!',P.x,P.y-20,'#0f8',15);
+      if(!hasMoved){godMode=true;addFx('✦ GOD MODE ✦',W/2,H/2-10,'#ffd700',20);flashIt('rgba(255,215,0,.35)');}
+      break;
     case'E':if(bombDist<BOMB_DIST+4){bombDist++;addFx(`RANGE UP! ×${bombDist}`,P.x,P.y-20,'#f80',14);}else{addFx('RANGE MAX!',P.x,P.y-20,'#f80',13);}break;
   }
   updateHUD();
