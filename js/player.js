@@ -2,19 +2,20 @@
 let P=null;
 function makePlayer(){return{x:W/2,y:H-90,w:P_W,h:P_H,fireT:0,invT:0,propA:0,weapon:1,wpTimer:0,alive:true};}
 
-function drawShipAt(sx,sy,pal,propA,glowCol){
-  // exhaust flicker behind sprite
+function drawShipAt(sx,sy,pal,propA,glowCol,sc=1){
+  cx.save();
+  cx.translate(sx,sy);cx.scale(sc,sc);cx.translate(-sx,-sy);
   cx.fillStyle=`rgba(${glowCol||'80,160,255'},${rnd(.15,.45)})`;
   const ex=Math.round(sx-PX*.5), ey=Math.round(sy+7*PX);
   cx.fillRect(ex,ey,PX,rnd(3,6)*PX|0);
   cx.fillRect(ex+PX*2,ey,PX,rnd(2,5)*PX|0);
   pxDraw(SPR_P,pal,sx,sy);
-  // Animated prop overlay (rotates as sprite rows 0-1 are drawn by pxDraw, we overdraw)
   cx.save();cx.translate(Math.round(sx),Math.round(sy-7*PX));cx.rotate(propA);
   cx.fillStyle=pal[5];
   cx.fillRect(-5*PX/2,0,PX,PX*3);cx.fillRect(5*PX/2-PX,0,PX,PX*3);
   cx.fillRect(0,-5*PX/2,PX*3,PX);cx.fillRect(0,5*PX/2-PX,PX*3,PX);
   cx.fillStyle=pal[6];cx.fillRect(-PX/2,-PX/2,PX,PX);
+  cx.restore();
   cx.restore();
 }
 
@@ -24,8 +25,8 @@ function drawPlayer(){
   if(ghostT>0){
     const ga=Math.min(1,ghostT)*(.55+.2*Math.sin(performance.now()*.005));
     cx.globalAlpha=ga;
-    drawShipAt(P.x-65,P.y+10,PAL_G,P.propA*.75,'100,140,255');
-    drawShipAt(P.x+65,P.y+10,PAL_G,P.propA*.75,'100,140,255');
+    drawShipAt(P.x-65,P.y+10,PAL_G,P.propA*.75,'100,140,255',0.7);
+    drawShipAt(P.x+65,P.y+10,PAL_G,P.propA*.75,'100,140,255',0.7);
     cx.globalAlpha=1;
   }
   if(fireballT>0){
@@ -39,10 +40,10 @@ function drawPlayer(){
     const pulse=.5+.4*Math.sin(performance.now()*.009);
     const fading=shieldT<3?shieldT/3:1;
     cx.globalAlpha=pulse*fading;cx.strokeStyle='#00ff88';cx.lineWidth=2.5;
-    cx.beginPath();cx.arc(Math.round(P.x),Math.round(P.y),34,0,Math.PI*2);cx.stroke();
+    cx.beginPath();cx.arc(Math.round(P.x),Math.round(P.y),24,0,Math.PI*2);cx.stroke();
     cx.globalAlpha=1;cx.lineWidth=1;
   }
-  drawShipAt(P.x,P.y,PAL_P,P.propA,'80,160,255');
+  drawShipAt(P.x,P.y,PAL_P,P.propA,'80,160,255',0.7);
 }
 
 function updatePlayer(dt){
