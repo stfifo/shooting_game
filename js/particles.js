@@ -1,5 +1,5 @@
 // ── Pixel Particles ───────────────────────────────────────────────
-let parts=[], fxts=[];
+let parts=[], fxts=[], blasts=[];
 
 function explode(x,y,type='A'){
   const cols={A:['#ff8800','#ff4400','#ffdd00','#ffaa00'],B:['#ff4400','#ff0000','#ff8800','#ffff00'],C:['#cc00ff','#8800ff','#ff0088','#ff44ff']};
@@ -38,6 +38,7 @@ function addHitSpark(x,y){
   }
 }
 function addFx(text,x,y,col,sz=14){fxts.push({text,x,y,col,sz,life:1.6,max:1.6,vy:-36});}
+function addBombBlast(x,y,r){blasts.push({x,y,maxR:r,life:0.45,max:0.45});}
 function flashIt(col){flashA=.6;flashCol=col;}
 function doShake(a,d){shakeAmt=a;shakeDur=Math.max(shakeDur,d);}
 
@@ -46,8 +47,26 @@ function updateParts(dt){
   parts=parts.filter(p=>p.life>0);
   fxts.forEach(t=>{t.y+=t.vy*dt;t.life-=dt;});
   fxts=fxts.filter(t=>t.life>0);
+  blasts.forEach(b=>b.life-=dt);
+  blasts=blasts.filter(b=>b.life>0);
 }
 function drawParts(){
+  // 폭탄 폭발 반경 링
+  blasts.forEach(b=>{
+    const t=1-b.life/b.max;          // 0→1 확장 진행도
+    const a=b.life/b.max;             // 1→0 페이드
+    const curR=b.maxR*t;
+    // 내부 채움 (폭발 범위 표시)
+    cx.globalAlpha=a*a*0.22;cx.fillStyle='#ff6600';
+    cx.beginPath();cx.arc(b.x,b.y,curR,0,Math.PI*2);cx.fill();
+    // 주 링
+    cx.globalAlpha=a*0.9;cx.strokeStyle='#ffaa00';cx.lineWidth=3*(1-t*0.6);
+    cx.beginPath();cx.arc(b.x,b.y,curR,0,Math.PI*2);cx.stroke();
+    // 선단 하이라이트
+    cx.globalAlpha=a*0.5;cx.strokeStyle='#fff8';cx.lineWidth=1;
+    cx.beginPath();cx.arc(b.x,b.y,curR,0,Math.PI*2);cx.stroke();
+  });
+  cx.globalAlpha=1;cx.lineWidth=1;
   parts.forEach(p=>{
     const a=p.life/p.max;
     if(p.kind==='smoke'){
