@@ -10,6 +10,16 @@ addEventListener('keydown',e=>{
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Enter'].includes(e.code))e.preventDefault();
   if(e.code==='Space'){if(STATE==='PLAYING')STATE='PAUSED';else if(STATE==='PAUSED')STATE='PLAYING';}
   if((e.code==='Enter'||e.code==='Space')&&(STATE==='IDLE'||STATE==='GAMEOVER'||STATE==='CLEAR'))startGame();
-  if(STATE==='PLAYING'){if(e.code==='KeyZ')useBomb();if(e.code==='KeyX')useSkill();}
+  if(STATE==='PLAYING'){
+    if(e.code==='KeyZ')useBomb();
+    if(e.code==='KeyX')useSkill();
+    if(e.code==='ShiftLeft'||e.code==='ShiftRight'){
+      cPressCount++;
+      if(cPressCount>=5){cPressCount=0;godMode=!godMode;
+        addFx(godMode?'✦ GOD MODE ✦':'✦ MORTAL ✦',W/2,H/2-10,godMode?'#ffd700':'#aaa',20);
+        flashIt(godMode?'rgba(255,215,0,.35)':'rgba(180,180,180,.3)');
+      }
+    }
+  }
 });
 addEventListener('keyup',e=>{keys.delete(e.code);setKeyVis(e.code,false);});
