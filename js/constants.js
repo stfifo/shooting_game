@@ -12,7 +12,7 @@ function cbez(t,p0,p1,p2,p3){const m=1-t;return m*m*m*p0+3*m*m*t*p1+3*m*t*t*p2+t
 
 // ── Constants ────────────────────────────────────────────────────
 const P_SPD=248, P_W=24, P_H=28, FIRE_RATE=0.13;
-const BOMB_MAX=3, SKILL_GOAL=20, FIREBALL_DUR=5, GHOST_DUR=15;
+const BOMB_MAX=3, LIFE_MAX=5, SKILL_GOAL=20, FIREBALL_DUR=5, GHOST_DUR=15;
 const BOMB_DIST=5; // 폭탄 폭발 반경 계수 (실제 반경 = BOMB_DIST * 30px)
 const RAPID_DUR=8, PIERCE_DUR=10, SHIELD_DUR=12, POWER_DUR=14;
 const TOTAL_WAVES=30; // 게임 완주 기준 웨이브 수

@@ -10,7 +10,6 @@ function updateHUD(){
   document.getElementById('ghostEl').textContent=ghostT>0?`${Math.ceil(ghostT)}s`:'-';
 }
 function updatePowerupPanel(){
-  const LIFE_MAX=5;
   // dur:true = 지속시간 바(활성 시만 표시) / dur:false = 수량 바(항상 표시)
   const cfg=[
     {id:'life',   t:lives,           max:LIFE_MAX,   dur:false, fmt:v=>`${Math.max(0,v|0)}`},

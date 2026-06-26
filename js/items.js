@@ -25,7 +25,7 @@ function applyItem(t){
   switch(t){
     case'P':if(P.weapon<4)P.weapon++;P.wpTimer=POWER_DUR;addFx('POWER UP!',P.x,P.y-20,'#ff0',15);break;
     case'B':bombs=Math.min(BOMB_MAX,bombs+1);addFx(`BOMB! (${bombs})`,P.x,P.y-20,'#f80',14);break;
-    case'L':lives++;addFx('LIFE UP! ♥',P.x,P.y-20,'#f88',15);break;
+    case'L':if(lives<LIFE_MAX)lives++;addFx(lives>=LIFE_MAX?'LIFE MAX!':'LIFE UP! ♥',P.x,P.y-20,'#f88',15);break;
     case'F':ghostT=GHOST_DUR;addFx('WING FORMATION!',P.x,P.y-24,'#8df',14);break;
     case'R':rapidT=RAPID_DUR;addFx('RAPID FIRE!',P.x,P.y-20,'#0ff',15);break;
     case'N':pierceT=PIERCE_DUR;addFx('PIERCE SHOT!',P.x,P.y-20,'#c0f',15);break;
