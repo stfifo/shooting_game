@@ -1,117 +1,258 @@
 // ── Items ─────────────────────────────────────────────────────────
-let pups=[];
-let fDropGroup=0,fDropCount=0; // 윙맨 아이템 그룹별 드롭 횟수 추적
-const ITEM_COLS={P:'#ff0',B:'#f80',L:'#f88',F:'#8df',R:'#0ff',N:'#c0f',S:'#0f8',E:'#ff6600'};
-function dropItem(x,y,forced=null){
-  const r=Math.random();let t=forced;
-  if(!t){if(r<.12)t='P';else if(r<.20)t='B';else if(r<.25)t='L';else if(r<.31)t='F';
-    else if(r<.35)t='R';else if(r<.38)t='N';else if(r<.41)t='S';else if(r<.43)t='E';}
+let pups = [];
+
+// 윙맨(F) 아이템 그룹별 드롭 횟수 추적
+let fDropGroup = 0, fDropCount = 0;
+
+const ITEM_COLS = { P: '#ff0', B: '#f80', L: '#f88', F: '#8df', R: '#0ff', N: '#c0f', S: '#0f8', E: '#ff6600' };
+
+/** 랜덤 아이템 드롭 (forced로 타입 지정 가능) */
+function dropItem(x, y, forced = null) {
+  const r = Math.random();
+  let t = forced;
+
+  if (!t) {
+    if      (r < .12) t = 'P';
+    else if (r < .20) t = 'B';
+    else if (r < .25) t = 'L';
+    else if (r < .31) t = 'F';
+    else if (r < .35) t = 'R';
+    else if (r < .38) t = 'N';
+    else if (r < .41) t = 'S';
+    else if (r < .43) t = 'E';
+  }
+
   // F(윙맨): 5웨이브 그룹당 최대 드롭 횟수 제한 (wave 1-15: 1번, wave 16+: 2번)
-  if(t==='F'){
-    const grp=Math.ceil(wave/5);
-    if(grp!==fDropGroup){fDropGroup=grp;fDropCount=0;}
-    const maxF=grp<=3?1:2;
-    if(fDropCount>=maxF)t=null;
+  if (t === 'F') {
+    const grp  = Math.ceil(wave / 5);
+    if (grp !== fDropGroup) { fDropGroup = grp; fDropCount = 0; }
+    const maxF = grp <= 3 ? 1 : 2;
+    if (fDropCount >= maxF) t = null;
     else fDropCount++;
   }
-  if(t)pups.push({x,y,vy:75,w:18,h:18,t,alive:true,bob:rnd(0,Math.PI*2)});
+
+  if (t) pups.push({ x, y, vy: 75, w: 18, h: 18, t, alive: true, bob: rnd(0, Math.PI * 2) });
 }
-function updateItems(dt){
-  pups.forEach(p=>{p.y+=p.vy*dt;p.bob+=dt*3;
-    if(P&&P.alive&&Math.abs(p.x-P.x)<22&&Math.abs(p.y-P.y)<22){p.alive=false;applyItem(p.t);}});
-  pups=pups.filter(p=>p.alive&&p.y<H+30);
+
+function updateItems(dt) {
+  pups.forEach(p => {
+    p.y   += p.vy * dt;
+    p.bob += dt * 3;
+    if (P && P.alive && Math.abs(p.x - P.x) < 22 && Math.abs(p.y - P.y) < 22) {
+      p.alive = false;
+      applyItem(p.t);
+    }
+  });
+  pups = pups.filter(p => p.alive && p.y < H + 30);
 }
-function applyItem(t){
-  switch(t){
-    case'P':if(P.weapon<4)P.weapon++;P.wpTimer=POWER_DUR;addFx('POWER UP!',P.x,P.y-20,'#ff0',15);break;
-    case'B':bombs=Math.min(BOMB_MAX,bombs+1);addFx(`BOMB! (${bombs})`,P.x,P.y-20,'#f80',14);break;
-    case'L':if(lives<LIFE_MAX)lives++;addFx(lives>=LIFE_MAX?'LIFE MAX!':'LIFE UP! ♥',P.x,P.y-20,'#f88',15);break;
-    case'F':ghostT=GHOST_DUR;addFx('WING FORMATION!',P.x,P.y-24,'#8df',14);break;
-    case'R':rapidT=RAPID_DUR;addFx('RAPID FIRE!',P.x,P.y-20,'#0ff',15);break;
-    case'N':pierceT=PIERCE_DUR;addFx('PIERCE SHOT!',P.x,P.y-20,'#c0f',15);break;
-    case'S':shieldT=1;addFx('SHIELD ON!',P.x,P.y-20,'#0f8',15);
-      if(!hasMoved){godMode=true;addFx('✦ GOD MODE ✦',W/2,H/2-10,'#ffd700',20);flashIt('rgba(255,215,0,.35)');}
+
+/** 아이템 효과 적용 */
+function applyItem(t) {
+  switch (t) {
+    case 'P':
+      if (P.weapon < 4) P.weapon++;
+      P.wpTimer = POWER_DUR;
+      addFx('POWER UP!', P.x, P.y - 20, '#ff0', 15);
       break;
-    case'E':if(bombDist<BOMB_DIST+4){bombDist++;addFx(`RANGE UP! ×${bombDist}`,P.x,P.y-20,'#f80',14);}else{addFx('RANGE MAX!',P.x,P.y-20,'#f80',13);}break;
+
+    case 'B':
+      bombs = Math.min(BOMB_MAX, bombs + 1);
+      addFx(`BOMB! (${bombs})`, P.x, P.y - 20, '#f80', 14);
+      break;
+
+    case 'L':
+      if (lives < LIFE_MAX) lives++;
+      addFx(lives >= LIFE_MAX ? 'LIFE MAX!' : 'LIFE UP! ♥', P.x, P.y - 20, '#f88', 15);
+      break;
+
+    case 'F':
+      ghostT = GHOST_DUR;
+      addFx('WING FORMATION!', P.x, P.y - 24, '#8df', 14);
+      break;
+
+    case 'R':
+      rapidT = RAPID_DUR;
+      addFx('RAPID FIRE!', P.x, P.y - 20, '#0ff', 15);
+      break;
+
+    case 'N':
+      pierceT = PIERCE_DUR;
+      addFx('PIERCE SHOT!', P.x, P.y - 20, '#c0f', 15);
+      break;
+
+    case 'S':
+      shieldT = 1;
+      addFx('SHIELD ON!', P.x, P.y - 20, '#0f8', 15);
+      // 이스터에그: 이동키 미사용 상태에서 쉴드 획득 → 무적 활성화
+      if (!hasMoved) {
+        godMode = true;
+        addFx('✦ GOD MODE ✦', W / 2, H / 2 - 10, '#ffd700', 20);
+        flashIt('rgba(255,215,0,.35)');
+      }
+      break;
+
+    case 'E':
+      if (bombDist < BOMB_DIST + 4) {
+        bombDist++;
+        addFx(`RANGE UP! ×${bombDist}`, P.x, P.y - 20, '#f80', 14);
+      } else {
+        addFx('RANGE MAX!', P.x, P.y - 20, '#f80', 13);
+      }
+      break;
   }
   updateHUD();
 }
-function drawItems(){
-  const now=performance.now()/1000;
-  pups.forEach(p=>{
-    const bob=Math.sin(p.bob)*4,S=PX;
-    cx.save();cx.translate(Math.round(p.x),Math.round(p.y+bob));
-    if(p.t==='F'){
-      // 천사 halo: 황금 타원 링 + 회전 반짝임
-      const pulse=0.6+0.4*Math.sin(now*4+p.bob);
-      // 외부 황금 halo 타원
-      cx.shadowBlur=16*pulse;cx.shadowColor='#ffd700';
-      cx.beginPath();cx.ellipse(0,0,13,6,0,0,Math.PI*2);
-      cx.strokeStyle=`rgba(255,215,0,${0.8+0.2*pulse})`;cx.lineWidth=4;cx.stroke();
-      // 내부 밝은 하이라이트
-      cx.shadowBlur=6;
-      cx.beginPath();cx.ellipse(0,0,10,4.5,0,0,Math.PI*2);
-      cx.strokeStyle=`rgba(255,255,180,${0.5*pulse})`;cx.lineWidth=1.5;cx.stroke();
-      // 타원 궤도를 따라 회전하는 반짝임 6개
-      cx.shadowBlur=8;cx.shadowColor='#fff';
-      for(let i=0;i<6;i++){
-        const angle=now*1.5+(Math.PI*2/6)*i;
-        const sx=Math.cos(angle)*13,sy=Math.sin(angle)*6;
-        const sp=0.5+0.5*Math.abs(Math.sin(now*3+i*1.1));
-        cx.beginPath();cx.arc(sx,sy,1.5+sp,0,Math.PI*2);
-        cx.fillStyle=`rgba(255,255,200,${sp})`;cx.fill();
-      }
-      // 중앙 아이콘
-      cx.shadowBlur=0;cx.fillStyle='#fff8c0';
-      cx.font='bold 7px Courier New';cx.textAlign='center';cx.textBaseline='middle';
-      cx.fillText('F',0,0);
-    }else if(p.t==='L'){
-      // 하트 픽셀 아트 (9열×7행, HS=2)
-      const HS=2;
-      [[0,1,1,0,0,0,1,1,0],[1,1,1,1,0,1,1,1,1],[1,1,1,1,1,1,1,1,1],
-       [0,1,1,1,1,1,1,1,0],[0,0,1,1,1,1,1,0,0],[0,0,0,1,1,1,0,0,0],[0,0,0,0,1,0,0,0,0]
-      ].forEach((row,r)=>row.forEach((v,c)=>{
-        if(!v)return;
-        cx.fillStyle=r<2?'#ff6680':'#ff2244';
-        cx.fillRect(-9+c*HS,-7+r*HS,HS,HS);
-      }));
-      cx.fillStyle='rgba(255,255,255,0.55)';cx.fillRect(-7,-5,HS,HS);
-    }else if(p.t==='B'){
-      // 폭탄 픽셀 아트 (7열×7행, BS=2) + 퓨즈 + 애니 스파크
-      const BS=2;
-      cx.shadowBlur=7;cx.shadowColor='#ff6600';
-      [[0,0,1,1,1,0,0],[0,1,1,1,1,1,0],[1,1,1,1,1,1,1],
-       [1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[0,1,1,1,1,1,0],[0,0,1,1,1,0,0]
-      ].forEach((row,r)=>row.forEach((v,c)=>{
-        if(!v)return;
-        cx.fillStyle='#222';cx.fillRect(-7+c*BS,-4+r*BS,BS,BS);
-      }));
-      cx.shadowBlur=0;
-      cx.fillStyle='#ff5500';cx.fillRect(-5,-2,BS,BS);
-      cx.fillStyle='#886633';cx.fillRect(1,-6,BS,BS);
-      const sp=0.5+0.5*Math.abs(Math.sin(now*14));
-      cx.fillStyle=`rgba(255,${100+120*sp},0,${sp+0.2})`;cx.fillRect(1,-8,BS,BS);
-      cx.fillStyle=`rgba(255,255,0,${sp*0.6})`;cx.fillRect(-1,-8,BS,BS);
-    }else if(p.t==='E'){
-      // 폭발 반경 확장 — 주황 방사형 픽셀
-      const ES=2,pulse=0.6+0.4*Math.abs(Math.sin(now*5+p.bob));
-      cx.fillStyle=`rgba(255,${80+80*pulse},0,1)`;
-      [[-2,0],[-1,0],[0,0],[1,0],[2,0],[0,-2],[0,-1],[0,1],[0,2]].forEach(([dx,dy])=>{
-        cx.fillRect(dx*ES-ES/2,dy*ES-ES/2,ES,ES);
-      });
-      cx.fillStyle=`rgba(255,${140+60*pulse},0,0.75)`;
-      [[-2,-2],[2,-2],[-2,2],[2,2]].forEach(([dx,dy])=>{
-        cx.fillRect(dx*ES-ES/2,dy*ES-ES/2,ES,ES);
-      });
-      cx.fillStyle=`rgba(255,255,200,${pulse})`;cx.fillRect(-ES/2,-ES/2,ES,ES);
-    }else{
-      const c=ITEM_COLS[p.t];
-      [[0,-2],[0,2],[-2,0],[2,0],[0,0],[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([dx,dy])=>{
-        cx.fillStyle=c;cx.fillRect(dx*S-S/2,dy*S-S/2,S,S);
-      });
-      cx.fillStyle='#000';cx.font='bold 8px Courier New';cx.textAlign='center';cx.textBaseline='middle';
-      cx.fillText(p.t,0,0);
-    }
-    cx.textBaseline='alphabetic';cx.textAlign='left';cx.restore();
+
+// ── 아이템 렌더링 ─────────────────────────────────────────────────
+
+/** F 아이템: 황금 halo 타원 + 회전 반짝임 6개 */
+function drawItemWingman(p, now) {
+  const pulse = 0.6 + 0.4 * Math.sin(now * 4 + p.bob);
+
+  // 외부 황금 halo 타원
+  cx.shadowBlur  = 16 * pulse;
+  cx.shadowColor = '#ffd700';
+  cx.beginPath();
+  cx.ellipse(0, 0, 13, 6, 0, 0, Math.PI * 2);
+  cx.strokeStyle = `rgba(255,215,0,${0.8 + 0.2 * pulse})`;
+  cx.lineWidth   = 4;
+  cx.stroke();
+
+  // 내부 하이라이트
+  cx.shadowBlur = 6;
+  cx.beginPath();
+  cx.ellipse(0, 0, 10, 4.5, 0, 0, Math.PI * 2);
+  cx.strokeStyle = `rgba(255,255,180,${0.5 * pulse})`;
+  cx.lineWidth   = 1.5;
+  cx.stroke();
+
+  // 타원 궤도를 따라 회전하는 반짝임 6개
+  cx.shadowBlur  = 8;
+  cx.shadowColor = '#fff';
+  for (let i = 0; i < 6; i++) {
+    const angle = now * 1.5 + (Math.PI * 2 / 6) * i;
+    const sx    = Math.cos(angle) * 13;
+    const sy    = Math.sin(angle) * 6;
+    const sp    = 0.5 + 0.5 * Math.abs(Math.sin(now * 3 + i * 1.1));
+    cx.beginPath();
+    cx.arc(sx, sy, 1.5 + sp, 0, Math.PI * 2);
+    cx.fillStyle = `rgba(255,255,200,${sp})`;
+    cx.fill();
+  }
+
+  // 중앙 아이콘
+  cx.shadowBlur      = 0;
+  cx.fillStyle       = '#fff8c0';
+  cx.font            = 'bold 7px Courier New';
+  cx.textAlign       = 'center';
+  cx.textBaseline    = 'middle';
+  cx.fillText('F', 0, 0);
+}
+
+/** L 아이템: 하트 픽셀 아트 */
+function drawItemLife() {
+  const HS = 2;
+  const pattern = [
+    [0, 1, 1, 0, 0, 0, 1, 1, 0],
+    [1, 1, 1, 1, 0, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 1, 1, 1, 1, 1, 0, 0],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+  ];
+  pattern.forEach((row, r) => row.forEach((v, c) => {
+    if (!v) return;
+    cx.fillStyle = r < 2 ? '#ff6680' : '#ff2244';
+    cx.fillRect(-9 + c * HS, -7 + r * HS, HS, HS);
+  }));
+  cx.fillStyle = 'rgba(255,255,255,0.55)';
+  cx.fillRect(-7, -5, HS, HS);
+}
+
+/** B 아이템: 폭탄 픽셀 아트 + 퓨즈 스파크 */
+function drawItemBomb(now) {
+  const BS = 2;
+  const pattern = [
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+  ];
+  cx.shadowBlur  = 7;
+  cx.shadowColor = '#ff6600';
+  pattern.forEach((row, r) => row.forEach((v, c) => {
+    if (!v) return;
+    cx.fillStyle = '#222';
+    cx.fillRect(-7 + c * BS, -4 + r * BS, BS, BS);
+  }));
+  cx.shadowBlur = 0;
+
+  // 퓨즈 + 애니 스파크
+  cx.fillStyle = '#ff5500';
+  cx.fillRect(-5, -2, BS, BS);
+  cx.fillStyle = '#886633';
+  cx.fillRect(1, -6, BS, BS);
+  const sp = 0.5 + 0.5 * Math.abs(Math.sin(now * 14));
+  cx.fillStyle = `rgba(255,${100 + 120 * sp},0,${sp + 0.2})`;
+  cx.fillRect(1, -8, BS, BS);
+  cx.fillStyle = `rgba(255,255,0,${sp * 0.6})`;
+  cx.fillRect(-1, -8, BS, BS);
+}
+
+/** E 아이템: 폭발 반경 확장 — 주황 방사형 픽셀 */
+function drawItemRange(p, now) {
+  const ES    = 2;
+  const pulse = 0.6 + 0.4 * Math.abs(Math.sin(now * 5 + p.bob));
+
+  cx.fillStyle = `rgba(255,${80 + 80 * pulse},0,1)`;
+  [[-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0], [0, -2], [0, -1], [0, 1], [0, 2]].forEach(([dx, dy]) => {
+    cx.fillRect(dx * ES - ES / 2, dy * ES - ES / 2, ES, ES);
+  });
+
+  cx.fillStyle = `rgba(255,${140 + 60 * pulse},0,0.75)`;
+  [[-2, -2], [2, -2], [-2, 2], [2, 2]].forEach(([dx, dy]) => {
+    cx.fillRect(dx * ES - ES / 2, dy * ES - ES / 2, ES, ES);
+  });
+
+  cx.fillStyle = `rgba(255,255,200,${pulse})`;
+  cx.fillRect(-ES / 2, -ES / 2, ES, ES);
+}
+
+/** 기본 아이템 (P, R, N, S): 다이아몬드 픽셀 + 라벨 */
+function drawItemDefault(p) {
+  const S = PX;
+  const c = ITEM_COLS[p.t];
+  [[0, -2], [0, 2], [-2, 0], [2, 0], [0, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => {
+    cx.fillStyle = c;
+    cx.fillRect(dx * S - S / 2, dy * S - S / 2, S, S);
+  });
+  cx.fillStyle       = '#000';
+  cx.font            = 'bold 8px Courier New';
+  cx.textAlign       = 'center';
+  cx.textBaseline    = 'middle';
+  cx.fillText(p.t, 0, 0);
+}
+
+function drawItems() {
+  const now = performance.now() / 1000;
+
+  pups.forEach(p => {
+    const bob = Math.sin(p.bob) * 4;
+    cx.save();
+    cx.translate(Math.round(p.x), Math.round(p.y + bob));
+
+    if      (p.t === 'F') drawItemWingman(p, now);
+    else if (p.t === 'L') drawItemLife();
+    else if (p.t === 'B') drawItemBomb(now);
+    else if (p.t === 'E') drawItemRange(p, now);
+    else                  drawItemDefault(p);
+
+    cx.textBaseline = 'alphabetic';
+    cx.textAlign    = 'left';
+    cx.restore();
   });
 }
